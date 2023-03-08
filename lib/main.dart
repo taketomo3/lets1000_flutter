@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/database_helper.dart';
 
 void main() {
   runApp(const MyApp());
+  final dbHelper = DatabaseHelper.instance;
+  final goal = Goal(goal: "目標1", unit: "単位");
+  goal.insert();
 }
 
 class MyApp extends StatelessWidget {
