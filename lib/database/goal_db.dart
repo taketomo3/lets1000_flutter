@@ -4,22 +4,13 @@ class Goal {
   final int id;
   final String goal;
   final String unit;
-  final String createdAt;
+  final DateTime createdAt;
 
   Goal(
       {required this.id,
       required this.goal,
       required this.unit,
       required this.createdAt});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'goal': goal,
-      'unit': unit,
-      'created_at': createdAt,
-    };
-  }
 
   static const executeString = '''
       CREATE TABLE Goal (
@@ -44,7 +35,7 @@ class Goal {
         id: goal['id'] as int,
         goal: goal['goal'] as String,
         unit: goal['unit'] as String,
-        createdAt: goal['created_at'] as String);
+        createdAt: DateTime.parse(goal['created_at'] as String));
   }
 
   static void insert(goal, unit) async {

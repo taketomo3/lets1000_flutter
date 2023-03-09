@@ -1,21 +1,16 @@
 import 'package:lets1000_android/database_helper.dart';
 
 class Record {
-  final int? id = null;
+  final int id;
   final double amount;
   final DateTime date;
-  final DateTime createdAt = DateTime.now();
+  final DateTime createdAt;
 
-  Record({required this.amount, required this.date});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'amount': amount,
-      'date': date,
-      'created_at': createdAt,
-    };
-  }
+  Record(
+      {required this.id,
+      required this.amount,
+      required this.date,
+      required this.createdAt});
 
   static const executeString = '''
       CREATE TABLE Record (
@@ -26,12 +21,13 @@ class Record {
       )
       ''';
 
-  void insert() async {
+  static void insert(amount, date) async {
     Map<String, dynamic> row = {
       'amount': amount,
       'date': date.toString(),
-      'created_at': createdAt.toString()
+      'created_at': DateTime.now().toString()
     };
+
     final db = await DatabaseHelper.instance.database;
     final id = await db!.insert('Record', row);
     print('登録しました record $id');

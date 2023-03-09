@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/database/record_db.dart';
 import 'package:lets1000_android/database_helper.dart';
 
 void main() {
@@ -54,8 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
+    Record.insert(10, DateTime.now());
+    Goal.insert("目標2", "単位2");
     Goal.fetchLast().then((value) {
-      print(value);
+      print(value.createdAt);
     });
     setState(() {
       // This call to setState tells the Flutter framework that something has
