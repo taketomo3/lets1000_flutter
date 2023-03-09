@@ -4,9 +4,7 @@ import 'package:lets1000_android/database_helper.dart';
 
 void main() {
   runApp(const MyApp());
-  final dbHelper = DatabaseHelper.instance;
-  final goal = Goal(goal: "目標1", unit: "単位");
-  goal.insert();
+  Goal.insert("目標2", "単位2");
 }
 
 class MyApp extends StatelessWidget {
@@ -56,6 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
+    Goal.fetchLast().then((value) {
+      print(value);
+    });
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below

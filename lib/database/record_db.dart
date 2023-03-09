@@ -32,7 +32,8 @@ class Record {
       'date': date.toString(),
       'created_at': createdAt.toString()
     };
-    final id = await DatabaseHelper.instance.insert('Record', row);
-    print('登録しました $id');
+    final db = await DatabaseHelper.instance.database;
+    final id = await db!.insert('Record', row);
+    print('登録しました record $id');
   }
 }

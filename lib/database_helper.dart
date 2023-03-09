@@ -33,9 +33,4 @@ class DatabaseHelper {
     await db.execute(Goal.executeString);
     await db.execute(Record.executeString);
   }
-
-  Future insert(String table, Map<String, dynamic> row) async {
-    Database? db = await database;
-    return await db!.insert(table, row);
-  }
 }
