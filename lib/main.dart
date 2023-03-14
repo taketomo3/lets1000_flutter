@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lets1000_android/database/goal_db.dart';
 import 'package:lets1000_android/database/record_db.dart';
-import 'package:lets1000_android/database_helper.dart';
+import 'package:lets1000_android/database/database_helper.dart';
 
 void main() {
   runApp(const MyApp());

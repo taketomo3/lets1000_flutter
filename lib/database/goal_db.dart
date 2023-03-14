@@ -1,10 +1,12 @@
-import 'package:lets1000_android/database_helper.dart';
+import 'package:lets1000_android/database/database_helper.dart';
 
 class Goal {
   final int id;
   final String goal;
   final String unit;
   final DateTime createdAt;
+
+  static const String _tableName = 'Goal';
 
   Goal(
       {required this.id,
@@ -21,9 +23,10 @@ class Goal {
       )
       ''';
 
-  static Future fetchLast() async {
+  static Future<Goal?> fetchLast() async {
     final db = await DatabaseHelper.instance.database;
-    final goals = await db!.query('Goal', orderBy: 'id DESC', limit: 1);
+    final goals =
+        await db!.query(Goal._tableName, orderBy: 'id DESC', limit: 1);
 
     if (goals.isEmpty) {
       return null;
@@ -38,7 +41,7 @@ class Goal {
         createdAt: DateTime.parse(goal['created_at'] as String));
   }
 
-  static void insert(goal, unit) async {
+  static Future<int> insert(String goal, String unit) async {
     Map<String, dynamic> row = {
       'goal': goal,
       'unit': unit,
@@ -46,7 +49,6 @@ class Goal {
     };
 
     final db = await DatabaseHelper.instance.database;
-    final id = await db!.insert('Goal', row);
-    // print('登録しました goal $id');
+    return await db!.insert(Goal._tableName, row);
   }
 }
