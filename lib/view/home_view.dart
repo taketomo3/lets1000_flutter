@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/view/setting_goal_view.dart';
 import 'package:lets1000_android/view_model/home_view_model.dart';
 
 class HomeView extends ConsumerWidget {
@@ -15,7 +16,7 @@ class HomeView extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: goal == null ? settingGoalView() : progressView(goal),
+        child: goal == null ? settingGoalView(context) : progressView(goal),
       ),
     );
   }
@@ -57,17 +58,43 @@ class HomeView extends ConsumerWidget {
     );
   }
 
-  Column settingGoalView() {
+  Column settingGoalView(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        const Text(
-          '2023年に『1000』を達成しよう',
-          style: TextStyle(fontSize: 32),
+        const Text('2023年に'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: const [
+            Text(
+              '『1000』',
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+            Text('を達成しよう')
+          ],
         ),
+        const SizedBox(height: 100),
         TextButton(
             onPressed: () {
-              print("onpress");
+              showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (BuildContext context) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 64),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: const SettingGoalView(),
+                    );
+                  });
+              const SettingGoalView();
             },
             child: const Text('目標を設定'))
       ],
