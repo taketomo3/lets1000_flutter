@@ -13,29 +13,25 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Goal? goal = ref.watch(goalProvider);
 
+    return goal == null ? settingGoalView(context) : progressView(goal);
+  }
+
+  Scaffold progressView(Goal goal) {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: goal == null ? settingGoalView(context) : progressView(goal),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          const Text('今年の目標'),
+          Text('1000${goal.unit} ${goal.goal}します！！！'),
+          const SizedBox(height: 120),
+          circleView(278),
+          const SizedBox(height: 150),
+        ]),
       ),
-    );
-  }
-
-  Column progressView(Goal goal) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text('今年の目標'),
-        Text('1000${goal.unit} ${goal.goal}します！！！'),
-        const SizedBox(height: 120),
-        circleView(278),
-        const SizedBox(height: 150),
-        TextButton(
-            onPressed: () {
-              print("onpress");
-            },
-            child: const Text('記録する'))
-      ],
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () => {},
+      ),
     );
   }
 
@@ -43,9 +39,7 @@ class HomeView extends ConsumerWidget {
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
-        CustomPaint(
-          painter: CirclePainter(value),
-        ),
+        CustomPaint(painter: CirclePainter(value)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -58,26 +52,29 @@ class HomeView extends ConsumerWidget {
     );
   }
 
-  Column settingGoalView(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        const Text('2023年に'),
-        Row(
+  Scaffold settingGoalView(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text(
-              '『1000』',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          children: <Widget>[
+            const Text('2023年に'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: const [
+                Text(
+                  '『1000』',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                ),
+                Text('を達成しよう')
+              ],
             ),
-            Text('を達成しよう')
-          ],
-        ),
-        const SizedBox(height: 100),
-        TextButton(
-            onPressed: () {
-              showModalBottomSheet(
+            const SizedBox(height: 100),
+            TextButton(
+              onPressed: () {
+                showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
@@ -93,11 +90,15 @@ class HomeView extends ConsumerWidget {
                       ),
                       child: const SettingGoalView(),
                     );
-                  });
-              const SettingGoalView();
-            },
-            child: const Text('目標を設定'))
-      ],
+                  },
+                );
+                const SettingGoalView();
+              },
+              child: const Text('目標を設定'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -57,10 +57,13 @@ class _SettingGoalViewState extends State<SettingGoalView> {
         ),
         const SizedBox(height: 30),
         ElevatedButton(
+          onPressed: (unit.isNotEmpty && goal.isNotEmpty)
+              ? () => {
+                    Goal.insert(goal, unit)
+                        .then((id) => {Navigator.of(context).pop()})
+                  }
+              : null,
           child: const Text('登録'),
-          onPressed: () {
-            Goal.insert(goal, unit).then((id) => {Navigator.of(context).pop()});
-          },
         ),
       ],
     );
