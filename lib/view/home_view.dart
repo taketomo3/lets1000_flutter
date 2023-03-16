@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/view/common/modal_sheet.dart';
+import 'package:lets1000_android/view/recording_view.dart';
 import 'package:lets1000_android/view/setting_goal_view.dart';
 import 'package:lets1000_android/view_model/home_view_model.dart';
 
@@ -13,10 +15,12 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Goal? goal = ref.watch(goalProvider);
 
-    return goal == null ? settingGoalView(context) : progressView(goal);
+    return goal == null
+        ? settingGoalView(context)
+        : progressView(goal, context);
   }
 
-  Scaffold progressView(Goal goal) {
+  Scaffold progressView(Goal goal, BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
@@ -30,7 +34,9 @@ class HomeView extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () => {},
+        onPressed: () {
+          showAlmostFullModal(context, const RecordingView());
+        },
       ),
     );
   }
@@ -74,25 +80,7 @@ class HomeView extends ConsumerWidget {
             const SizedBox(height: 100),
             TextButton(
               onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (BuildContext context) {
-                    return Container(
-                      margin: const EdgeInsets.only(top: 64),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: const SettingGoalView(),
-                    );
-                  },
-                );
-                const SettingGoalView();
+                showAlmostFullModal(context, const SettingGoalView());
               },
               child: const Text('目標を設定'),
             ),
