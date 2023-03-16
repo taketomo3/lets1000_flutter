@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lets1000_android/database/goal_db.dart';
-import 'package:lets1000_android/view_model/home_view_model.dart';
 
 class SettingGoalView extends StatefulWidget {
   const SettingGoalView({Key? key}) : super(key: key);
@@ -32,7 +31,9 @@ class _SettingGoalViewState extends State<SettingGoalView> {
                 autofocus: true,
                 decoration: const InputDecoration(hintText: '時間'),
                 onChanged: (value) {
-                  unit = value;
+                  setState(() {
+                    unit = value;
+                  });
                 },
               ),
             )
@@ -48,7 +49,9 @@ class _SettingGoalViewState extends State<SettingGoalView> {
               child: TextField(
                 decoration: const InputDecoration(hintText: '読書'),
                 onChanged: (value) {
-                  goal = value;
+                  setState(() {
+                    goal = value;
+                  });
                 },
               ),
             ),
@@ -57,15 +60,15 @@ class _SettingGoalViewState extends State<SettingGoalView> {
         ),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: (unit.isNotEmpty && goal.isNotEmpty)
-              ? () => {
-                    Goal.insert(goal, unit)
-                        .then((id) => {Navigator.of(context).pop()})
-                  }
-              : null,
+          onPressed:
+              (unit.isEmpty || goal.isEmpty) ? null : () => onRegistered(),
           child: const Text('登録'),
         ),
       ],
     );
+  }
+
+  void onRegistered() {
+    Goal.insert(goal, unit).then((id) => {Navigator.of(context).pop()});
   }
 }
