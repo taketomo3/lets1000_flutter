@@ -20,9 +20,8 @@ class HomeView extends ConsumerWidget {
         : progressView(goal, context);
   }
 
-  Scaffold progressView(Goal goal, BuildContext context) {
+  Widget progressView(Goal goal, BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text('今年の目標'),
@@ -41,6 +40,35 @@ class HomeView extends ConsumerWidget {
     );
   }
 
+  Widget settingGoalView(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text('2023年に'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text(
+                '『1000』',
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              ),
+              Text('を達成しよう')
+            ],
+          ),
+          const SizedBox(height: 100),
+          TextButton(
+            onPressed: () {
+              showAlmostFullModal(context, const SettingGoalView());
+            },
+            child: const Text('目標を設定'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Stack circleView(int value) {
     return Stack(
       alignment: AlignmentDirectional.center,
@@ -55,38 +83,6 @@ class HomeView extends ConsumerWidget {
           ],
         )
       ],
-    );
-  }
-
-  Scaffold settingGoalView(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('2023年に'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: const [
-                Text(
-                  '『1000』',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
-                Text('を達成しよう')
-              ],
-            ),
-            const SizedBox(height: 100),
-            TextButton(
-              onPressed: () {
-                showAlmostFullModal(context, const SettingGoalView());
-              },
-              child: const Text('目標を設定'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
