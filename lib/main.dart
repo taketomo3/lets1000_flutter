@@ -36,7 +36,7 @@ class _TabViewState extends State<TabView> {
 
   final _screens = [
     const HomeView(),
-    const RecordListView(),
+    RecordListView(),
     const DocumentView(),
   ];
 
