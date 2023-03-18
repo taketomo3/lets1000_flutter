@@ -15,29 +15,60 @@ class RecordListView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text("頑張った記録")),
-      body: GroupedListView(
-        elements: recordList,
-        groupBy: (record) => "${record.date.year}年 ${record.date.month}月",
-        groupSeparatorBuilder: (String value) => Padding(
-            padding:
-                const EdgeInsets.only(top: 20, bottom: 4, right: 20, left: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(value,
-                    style: const TextStyle(
-                        fontSize: 10, fontWeight: FontWeight.w300)),
-                const Text(
-                  "200km",
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
-                ),
-              ],
-            )),
-        itemBuilder: (context, element) => _itemWidget(element),
+      body: Container(
+        padding: const EdgeInsets.only(left: 20, right: 20),
+        color: Colors.blueGrey[50],
+        child: GroupedListView(
+          elements: recordList,
+          groupBy: (record) => "${record.date.year}年 ${record.date.month}月",
+          order: GroupedListOrder.DESC,
+          itemComparator: (element1, element2) =>
+              element2.date.compareTo(element1.date),
+          useStickyGroupSeparators: true,
+          stickyHeaderBackgroundColor: const Color(0xFFECEFF1),
+          separator: const SizedBox(height: 1),
+          groupSeparatorBuilder: (String value) => _groupSeparator(value),
+          itemBuilder: (context, element) => _itemWidget(element),
+        ),
       ),
     );
   }
 
+  Widget _groupSeparator(String value) {
+    return Container(
+      padding: const EdgeInsets.only(top: 20, bottom: 4, right: 20, left: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            value,
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
+          ),
+          const Text(
+            "合計: 200km",
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _itemWidget(Record record) {
+    return Container(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(_toMonthDate(record.date)),
+          Text("${(record.amount) * 10.ceil() / 10} ${goal.unit}")
+        ],
+      ),
+    );
+  }
+
+  /* メソッド */
   List<Record> _fetchData() {
     List<Record> data = [];
     DateTime date = DateTime.utc(DateTime.now().year, 1, 1);
@@ -53,33 +84,6 @@ class RecordListView extends StatelessWidget {
       );
     }
     return data;
-  }
-
-  Widget _itemWidget(Record record) {
-    return Column(children: [
-      Container(
-        color: Colors.grey[100],
-        child: Padding(
-          padding:
-              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(_toMonthDate(record.date)),
-              Text("${(record.amount) * 10.ceil() / 10} ${goal.unit}")
-            ],
-          ),
-        ),
-      ),
-      Divider(
-        color: Colors.grey[300], // Dividerの色を設定
-        thickness: 1, // Dividerの太さを設定
-        height: 1,
-        indent: 10,
-        endIndent: 10,
-      )
-    ]);
   }
 
   String _toMonthDate(DateTime date) {
