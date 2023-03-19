@@ -6,7 +6,6 @@ import 'package:lets1000_android/constant.dart';
 import 'package:lets1000_android/database/goal_db.dart';
 import 'package:lets1000_android/view/common/webview.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class DocumentView extends StatefulWidget {
   const DocumentView({super.key});
@@ -55,19 +54,23 @@ class _DocumentViewState extends State<DocumentView> {
   }
 
   Widget _itemWidget(DocumentElement element) {
-    void _onTap() {
+    void onTap() {
       if (element.url == null) {
         return;
       }
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WebViewPage(url: element.url!)));
+        context,
+        MaterialPageRoute(
+            builder: (context) => WebViewPage(
+                  url: element.url!,
+                  title: element.title,
+                )),
+      );
     }
 
     return GestureDetector(
       onTap: () {
-        _onTap();
+        onTap();
       },
       child: Container(
         padding:

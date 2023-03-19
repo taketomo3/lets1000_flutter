@@ -40,7 +40,7 @@ class _TabViewState extends State<TabView> {
   final _screens = [
     const HomeView(),
     RecordListView(),
-    DocumentView(),
+    const DocumentView(),
   ];
 
   void _onItemTapped(int index) {

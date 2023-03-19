@@ -1,5 +1,3 @@
-import 'package:package_info_plus/package_info_plus.dart';
-
 class ConstantData {
   static String updateDate = "2023年3月16日";
 
