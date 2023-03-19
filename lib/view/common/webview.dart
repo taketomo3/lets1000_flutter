@@ -3,9 +3,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
   final String url;
-  final String title;
 
-  const WebViewPage({super.key, required this.url, required this.title});
+  const WebViewPage({super.key, required this.url});
 
   @override
   createState() => _WebViewPageState();
@@ -14,28 +13,47 @@ class WebViewPage extends StatefulWidget {
 class _WebViewPageState extends State<WebViewPage> {
   late WebViewController controller;
 
+  bool isLoading = false;
+  String loadedTitle = "";
+
   @override
   void initState() {
     super.initState();
     controller = WebViewController()
-      // ..setNavigationDelegate(NavigationDelegate(
-      //   onProgress: (progress) => {},
-      //   onPageStarted: (url) {
-
-      //   },
-      //   onNavigationRequest: (NavigationRequest request) {
-
-      //   }
-      // ))
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(
+        onPageStarted: (url) {
+          setState(() {
+            isLoading = true;
+          });
+        },
+        onPageFinished: (url) async {
+          setState(() {
+            isLoading = false;
+          });
+          final t = await controller.getTitle();
+          setState(() {
+            if (t != null) {
+              loadedTitle = t;
+            }
+          });
+        },
+      ))
       ..loadRequest(Uri.parse(widget.url));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: WebViewWidget(controller: controller));
+      appBar: AppBar(
+        title: Text(loadedTitle),
+      ),
+      body: Column(
+        children: [
+          if (isLoading) const LinearProgressIndicator(),
+          Expanded(child: WebViewWidget(controller: controller)),
+        ],
+      ),
+    );
   }
 }

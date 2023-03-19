@@ -60,11 +60,7 @@ class _DocumentViewState extends State<DocumentView> {
       }
       Navigator.push(
         context,
-        MaterialPageRoute(
-            builder: (context) => WebViewPage(
-                  url: element.url!,
-                  title: element.title,
-                )),
+        MaterialPageRoute(builder: (context) => WebViewPage(url: element.url!)),
       );
     }
 
@@ -156,12 +152,12 @@ class _DocumentViewState extends State<DocumentView> {
         title: "お問い合わせ",
         url: ConstantData.contactFormPath,
       ),
-      DocumentElement(
-        groupId: 2,
-        id: 3,
-        title: "Playストアを確認",
-        url: ConstantData.playStorePath,
-      ),
+      // DocumentElement(
+      //   groupId: 2,
+      //   id: 3,
+      //   title: "Playストアを確認",
+      //   url: ConstantData.playStorePath,
+      // ),
       DocumentElement(
         groupId: 3,
         id: 1,
