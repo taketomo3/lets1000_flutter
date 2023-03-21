@@ -42,8 +42,9 @@ class _RecordListViewState extends State<RecordListView> {
       body: Container(
         padding: const EdgeInsets.only(left: 20, right: 20),
         color: Colors.blueGrey[50],
-        child: viewModel.recordList == null
-            ? const LinearProgressIndicator()
+        child: !(viewModel.recordList != null &&
+                viewModel.recordList!.isNotEmpty)
+            ? noRecordView()
             : GroupedListView(
                 elements: viewModel.recordList!,
                 groupBy: (record) =>
@@ -58,6 +59,12 @@ class _RecordListViewState extends State<RecordListView> {
                 itemBuilder: (context, element) => _itemWidget(element),
               ),
       ),
+    );
+  }
+
+  Widget noRecordView() {
+    return const Center(
+      child: Text("目標を設定し、記録を入力しよう！"),
     );
   }
 

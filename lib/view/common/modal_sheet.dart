@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-void showAlmostFullModal(BuildContext context, Widget widget) {
+void showAlmostFullModal(
+    BuildContext context, Widget widget, VoidCallback updateState) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -18,5 +19,7 @@ void showAlmostFullModal(BuildContext context, Widget widget) {
         child: widget,
       );
     },
-  );
+  ).then((value) {
+    updateState();
+  });
 }

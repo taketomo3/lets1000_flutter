@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lets1000_android/database/goal_db.dart';
-import 'package:lets1000_android/database/record_db.dart';
+import 'package:lets1000_android/view_model/recording_view_model.dart';
 
 class RecordingView extends StatefulWidget {
   const RecordingView({Key? key}) : super(key: key);
@@ -10,10 +10,19 @@ class RecordingView extends StatefulWidget {
 }
 
 class _RecordingViewState extends State<RecordingView> {
+  final viewModel = RecordingViewModel();
+  Goal? goal;
+
   double? amount;
   int dateIndex = 0;
 
-  Goal goal = Goal(id: 1, goal: 'ランニング', unit: 'km', createdAt: DateTime.now());
+  @override
+  void initState() {
+    super.initState();
+    viewModel.fetchGoal().then((value) {
+      setState(() => goal = value);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,45 +42,32 @@ class _RecordingViewState extends State<RecordingView> {
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  setState(() {
-                    amount = double.tryParse(value);
-                  });
+                  setState(() => amount = double.tryParse(value));
                 },
               ),
             ),
-            Text(goal.unit)
+            Text(goal?.unit ?? "")
           ],
         ),
         const SizedBox(height: 10),
-        Text('${goal.goal}しました！！'),
+        Text('${goal?.goal}しました！！'),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: amount == null ? null : () => onRegistered(),
+          onPressed: amount == null
+              ? null
+              : () {
+                  viewModel.onRegistered(
+                      amount!, dateIndex, Navigator.of(context).pop());
+                },
           child: const Text('記録する'),
         ),
       ],
     );
   }
 
-  void onRegistered() {
-    if (amount == null) {
-      return;
-    }
-
-    final List<DateTime> dateList = [
-      DateTime.now(),
-      DateTime.now().subtract(const Duration(days: -1))
-    ];
-
-    Record.insert(amount!, dateList[dateIndex])
-        .then((id) => {Navigator.of(context).pop()});
-  }
-
   Row dateChooseWidget() {
     void updateDate(int? i) => setState(() {
-          if (i != null) {
-            dateIndex = i;
-          }
+          if (i != null) dateIndex = i;
         });
 
     return Row(
@@ -81,9 +77,7 @@ class _RecordingViewState extends State<RecordingView> {
           Radio(
             value: 0,
             groupValue: dateIndex,
-            onChanged: (i) {
-              updateDate(i);
-            },
+            onChanged: (i) => updateDate(i),
           ),
           const Text('今日')
         ]),
@@ -91,9 +85,7 @@ class _RecordingViewState extends State<RecordingView> {
           Radio(
             value: 1,
             groupValue: dateIndex,
-            onChanged: (i) {
-              updateDate(i);
-            },
+            onChanged: (i) => updateDate(i),
           ),
           const Text('昨日')
         ]),

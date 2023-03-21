@@ -26,7 +26,7 @@ class DocumentViewModel {
   }
 
   bool _allPrepared() {
-    return _recordList != null && _goal != null && _packageInfo != null;
+    return _recordList != null && _packageInfo != null;
   }
 
   /* 表示に必要な非同期データを取得 */
@@ -59,7 +59,7 @@ class DocumentViewModel {
         groupId: 1,
         id: 1,
         title: "合計数",
-        value: "${_fetchTotalAmount()} ${_goal?.unit}",
+        value: "${_fetchTotalAmount()} ${_goal?.unit ?? ""}",
       ),
       DocumentElement(
         groupId: 1,
@@ -71,13 +71,13 @@ class DocumentViewModel {
         groupId: 1,
         id: 3,
         title: "1回あたりの平均",
-        value: "${_fetchAverageAmount()} ${_goal?.unit}",
+        value: "${_fetchAverageAmount()} ${_goal?.unit ?? ""}",
       ),
       DocumentElement(
         groupId: 1,
         id: 4,
         title: "このペースでいくと2023年中に",
-        value: "${_fetchExpectedTotalAmount()} ${_goal?.unit}",
+        value: "${_fetchExpectedTotalAmount()} ${_goal?.unit ?? ""}",
       ),
       DocumentElement(
         groupId: 2,
@@ -137,14 +137,14 @@ class DocumentViewModel {
   }
 
   double _fetchAverageAmount() {
-    if (_recordList == null) return 0;
+    if (_recordList == null || _recordList!.isEmpty) return 0;
 
     double average = _fetchTotalAmount() / _fetchTotalCount();
     return (average * 10).toInt() / 10;
   }
 
   int _fetchExpectedTotalAmount() {
-    if (_recordList == null) return 0;
+    if (_recordList == null || _recordList!.isEmpty) return 0;
 
     DateTime startDate = DateTime(2023, 1, 1);
     DateTime today = DateTime.now();
