@@ -1,4 +1,4 @@
-package com.example.lets1000_android
+package com.taketomo.lets1000
 
 import io.flutter.embedding.android.FlutterActivity
 

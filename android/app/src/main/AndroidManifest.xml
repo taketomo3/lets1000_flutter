@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.lets1000_android">
+    package="com.taketomo.lets1000">
    <application
-        android:label="lets1000_android"
+        android:label="1000Goal"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
