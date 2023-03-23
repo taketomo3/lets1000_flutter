@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/view/common/toast.dart';
 
 class SettingGoalView extends StatefulWidget {
   const SettingGoalView({Key? key}) : super(key: key);
@@ -11,6 +13,13 @@ class SettingGoalView extends StatefulWidget {
 class _SettingGoalViewState extends State<SettingGoalView> {
   String unit = '';
   String goal = '';
+  FToast fToast = FToast();
+
+  @override
+  void initState() {
+    super.initState();
+    fToast.init(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,5 +79,6 @@ class _SettingGoalViewState extends State<SettingGoalView> {
 
   void onRegistered() {
     Goal.insert(goal, unit).then((id) => {Navigator.of(context).pop()});
+    showToast(fToast, ["素敵な目標ですね！", "これから頑張りましょう！"]);
   }
 }

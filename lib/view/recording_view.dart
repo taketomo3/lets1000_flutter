@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/view/common/toast.dart';
 import 'package:lets1000_android/view_model/recording_view_model.dart';
 
 class RecordingView extends StatefulWidget {
@@ -12,6 +14,7 @@ class RecordingView extends StatefulWidget {
 class _RecordingViewState extends State<RecordingView> {
   final viewModel = RecordingViewModel();
   Goal? goal;
+  FToast fToast = FToast();
 
   double? amount;
   int dateIndex = 0;
@@ -22,6 +25,7 @@ class _RecordingViewState extends State<RecordingView> {
     viewModel.fetchGoal().then((value) {
       setState(() => goal = value);
     });
+    fToast.init(context);
   }
 
   @override
@@ -58,6 +62,8 @@ class _RecordingViewState extends State<RecordingView> {
               : () {
                   viewModel.onRegistered(
                       amount!, dateIndex, Navigator.of(context).pop());
+                  showToast(fToast,
+                      ["ナイス！！", "お疲れ様です！！", "いい調子ですね！", "！！！！", "記録しました！"]);
                 },
           child: const Text('記録する'),
         ),
