@@ -5,7 +5,9 @@ import 'package:lets1000_android/database/record_db.dart';
 
 class HomeViewModel {
   HomeViewModel() {
-    fetchTotalAmount();
+    Future(() async {
+      await fetchTotalAmount();
+    });
     fetchGoal();
   }
 
@@ -24,18 +26,17 @@ class HomeViewModel {
     _hasGoalController.close();
   }
 
-  fetchTotalAmount() {
-    Record.fetchAll().then((value) {
-      double amount = 0;
-      for (var e in value) {
-        amount += e.amount;
-      }
-      totalAmount = amount.toInt();
-      _totalAmountController.add(totalAmount);
-    });
+  Future<void> fetchTotalAmount() async {
+    final value = await Record.fetchAll();
+    var amount = 0.0;
+    for (final e in value) {
+      amount += e.amount;
+    }
+    totalAmount = amount.toInt();
+    _totalAmountController.add(totalAmount);
   }
 
-  fetchGoal() {
+  void fetchGoal() {
     Goal.fetchLast().then((value) {
       goal = value;
       _hasGoalController.add(value != null);

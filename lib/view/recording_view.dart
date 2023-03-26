@@ -5,7 +5,7 @@ import 'package:lets1000_android/view/common/toast.dart';
 import 'package:lets1000_android/view_model/recording_view_model.dart';
 
 class RecordingView extends StatefulWidget {
-  const RecordingView({Key? key}) : super(key: key);
+  const RecordingView({super.key});
 
   @override
   State<RecordingView> createState() => _RecordingViewState();
@@ -31,7 +31,6 @@ class _RecordingViewState extends State<RecordingView> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const SizedBox(height: 100),
         dateChooseWidget(),
@@ -50,7 +49,7 @@ class _RecordingViewState extends State<RecordingView> {
                 },
               ),
             ),
-            Text(goal?.unit ?? "")
+            Text(goal?.unit ?? '')
           ],
         ),
         const SizedBox(height: 10),
@@ -61,9 +60,20 @@ class _RecordingViewState extends State<RecordingView> {
               ? null
               : () {
                   viewModel.onRegistered(
-                      amount!, dateIndex, Navigator.of(context).pop());
-                  showToast(fToast,
-                      ["ナイス！！", "お疲れ様です！！", "いい調子ですね！", "！！！！", "記録しました！"]);
+                    amount!,
+                    dateIndex,
+                    Navigator.of(context).pop(),
+                  );
+                  showToast(
+                    fToast,
+                    [
+                      'ナイス！！',
+                      'お疲れ様です！！',
+                      'いい調子ですね！',
+                      '！！！！',
+                      '記録しました！',
+                    ],
+                  );
                 },
           child: const Text('記録する'),
         ),
@@ -73,28 +83,34 @@ class _RecordingViewState extends State<RecordingView> {
 
   Row dateChooseWidget() {
     void updateDate(int? i) => setState(() {
-          if (i != null) dateIndex = i;
+          if (i != null) {
+            dateIndex = i;
+          }
         });
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(children: [
-          Radio(
-            value: 0,
-            groupValue: dateIndex,
-            onChanged: (i) => updateDate(i),
-          ),
-          const Text('今日')
-        ]),
-        Row(children: [
-          Radio(
-            value: 1,
-            groupValue: dateIndex,
-            onChanged: (i) => updateDate(i),
-          ),
-          const Text('昨日')
-        ]),
+        Row(
+          children: [
+            Radio(
+              value: 0,
+              groupValue: dateIndex,
+              onChanged: updateDate,
+            ),
+            const Text('今日')
+          ],
+        ),
+        Row(
+          children: [
+            Radio(
+              value: 1,
+              groupValue: dateIndex,
+              onChanged: updateDate,
+            ),
+            const Text('昨日')
+          ],
+        ),
       ],
     );
   }

@@ -30,21 +30,21 @@ class DocumentViewModel {
   }
 
   /* 表示に必要な非同期データを取得 */
-  _fetchRecordList() {
+  void _fetchRecordList() {
     Record.fetchAll().then((value) {
       _recordList = value;
       _isPreparedController.add(_allPrepared());
     });
   }
 
-  _fetchGoal() {
+  void _fetchGoal() {
     Goal.fetchLast().then((value) {
       _goal = value;
       _isPreparedController.add(_allPrepared());
     });
   }
 
-  _fetchAppVer() {
+  void _fetchAppVer() {
     PackageInfo.fromPlatform().then((value) {
       _packageInfo = value;
       _isPreparedController.add(_allPrepared());
@@ -58,65 +58,65 @@ class DocumentViewModel {
       DocumentElement(
         groupId: 1,
         id: 1,
-        title: "合計数",
-        value: "${_fetchTotalAmount()} ${_goal?.unit ?? ""}",
+        title: '合計数',
+        value: '${_fetchTotalAmount()} ${_goal?.unit ?? ''}',
       ),
       DocumentElement(
         groupId: 1,
         id: 2,
-        title: "登録回数",
-        value: "${_fetchTotalCount()} 回",
+        title: '登録回数',
+        value: '${_fetchTotalCount()} 回',
       ),
       DocumentElement(
         groupId: 1,
         id: 3,
-        title: "1回あたりの平均",
-        value: "${_fetchAverageAmount()} ${_goal?.unit ?? ""}",
+        title: '1回あたりの平均',
+        value: '${_fetchAverageAmount()} ${_goal?.unit ?? ''}',
       ),
       DocumentElement(
         groupId: 1,
         id: 4,
-        title: "このペースでいくと2023年中に",
-        value: "${_fetchExpectedTotalAmount()} ${_goal?.unit ?? ""}",
+        title: 'このペースでいくと2023年中に',
+        value: '${_fetchExpectedTotalAmount()} ${_goal?.unit ?? ''}',
       ),
       DocumentElement(
         groupId: 2,
         id: 1,
-        title: "開発ロードマップ",
-        url: ConstantData.roadmapPath,
+        title: '開発ロードマップ',
+        url: roadmapPath,
       ),
       DocumentElement(
         groupId: 2,
         id: 2,
-        title: "お問い合わせ",
-        url: ConstantData.contactFormPath,
+        title: 'お問い合わせ',
+        url: contactFormPath,
       ),
       // DocumentElement(
       //   groupId: 2,
       //   id: 3,
-      //   title: "Playストアを確認",
+      //   title: 'Playストアを確認',
       //   url: ConstantData.playStorePath,
       // ),
       DocumentElement(
         groupId: 3,
         id: 1,
-        title: "アプリバージョン",
-        value: "${_packageInfo?.version}(${_packageInfo?.buildNumber})",
+        title: 'アプリバージョン',
+        value: '${_packageInfo?.version}(${_packageInfo?.buildNumber})',
       ),
       DocumentElement(
         groupId: 3,
         id: 2,
-        title: "更新日",
-        value: ConstantData.updateDate,
+        title: '更新日',
+        value: updateDate,
       ),
     ];
   }
 
   GroupElement fetchGroup(int id) {
     final groups = [
-      GroupElement(id: 1, name: "統計データ"),
-      GroupElement(id: 2, name: "アプリについて"),
-      GroupElement(id: 3, name: "アプリ情報"),
+      GroupElement(id: 1, name: '統計データ'),
+      GroupElement(id: 2, name: 'アプリについて'),
+      GroupElement(id: 3, name: 'アプリ情報'),
     ];
 
     return groups.firstWhere((element) => element.id == id);
@@ -125,7 +125,7 @@ class DocumentViewModel {
 
   /* DocumentElementで使用 */
   double _fetchTotalAmount() {
-    double total = 0;
+    var total = 0.0;
     _recordList?.forEach((record) {
       total += record.amount;
     });
@@ -137,22 +137,28 @@ class DocumentViewModel {
   }
 
   double _fetchAverageAmount() {
-    if (_recordList == null || _recordList!.isEmpty) return 0;
+    if (_recordList == null || _recordList!.isEmpty) {
+      return 0;
+    }
 
-    double average = _fetchTotalAmount() / _fetchTotalCount();
+    final average = _fetchTotalAmount() / _fetchTotalCount();
     return (average * 10).toInt() / 10;
   }
 
   int _fetchExpectedTotalAmount() {
-    if (_recordList == null || _recordList!.isEmpty) return 0;
+    if (_recordList == null || _recordList!.isEmpty) {
+      return 0;
+    }
 
-    DateTime startDate = DateTime(2023, 1, 1);
-    DateTime today = DateTime.now();
+    final startDate = DateTime(
+      2023,
+    );
+    final today = DateTime.now();
 
-    int daysSinceStart = today.difference(startDate).inDays;
-    int totalDaysInYear = 365;
+    final daysSinceStart = today.difference(startDate).inDays;
+    const totalDaysInYear = 365;
 
-    double expectedTotalAmount =
+    final expectedTotalAmount =
         (totalDaysInYear / daysSinceStart) * _fetchTotalAmount();
     return expectedTotalAmount.toInt();
   }

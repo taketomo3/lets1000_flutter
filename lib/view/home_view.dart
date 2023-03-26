@@ -47,27 +47,31 @@ class _HomeViewState extends State<HomeView> {
   Widget progressView(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text('今年の目標'),
-          Text('1000${viewModel.goal?.unit} ${viewModel.goal?.goal}します！！！'),
-          const SizedBox(height: 120),
-          circleView(viewModel.totalAmount ?? 0),
-          const SizedBox(height: 150),
-        ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('今年の目標'),
+            Text('1000${viewModel.goal?.unit} ${viewModel.goal?.goal}します！！！'),
+            const SizedBox(height: 120),
+            circleView(viewModel.totalAmount ?? 0),
+            const SizedBox(height: 150),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            showAlmostFullModal(context, const RecordingView(), updateState);
-          }),
+        child: const Icon(Icons.add),
+        onPressed: () {
+          showAlmostFullModal(context, const RecordingView(), updateState);
+        },
+      ),
     );
   }
 
   void updateState() {
-    setState(() {
-      viewModel.fetchGoal();
-      viewModel.fetchTotalAmount();
-    });
+    viewModel
+      ..fetchGoal()
+      ..fetchTotalAmount();
+    setState(() {});
   }
 
   Widget settingGoalView(BuildContext context) {
@@ -90,7 +94,10 @@ class _HomeViewState extends State<HomeView> {
           const SizedBox(height: 100),
           TextButton(
             onPressed: () => showAlmostFullModal(
-                context, const SettingGoalView(), updateState),
+              context,
+              const SettingGoalView(),
+              updateState,
+            ),
             child: const Text('目標を設定'),
           ),
         ],
@@ -117,22 +124,25 @@ class _HomeViewState extends State<HomeView> {
 }
 
 class CirclePainter extends CustomPainter {
-  final int value;
-
   CirclePainter(this.value);
+  final int value;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-
-    paint.color = Colors.indigo;
-    paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 30;
+    final paint = Paint()
+      ..color = Colors.indigo
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 30;
 
     final endAngle = value / 1000 * pi * 2;
 
-    canvas.drawArc(const Offset(-100, -100) & const Size(200, 200), -pi / 2,
-        endAngle, false, paint);
+    canvas.drawArc(
+      const Offset(-100, -100) & const Size(200, 200),
+      -pi / 2,
+      endAngle,
+      false,
+      paint,
+    );
   }
 
   @override

@@ -18,7 +18,7 @@ class RecordListViewModel {
     _recordListController.close();
   }
 
-  fetchRecordList() {
+  void fetchRecordList() {
     Record.fetchAll().then((value) {
       recordList = value;
       _recordListController.add(value);
@@ -30,11 +30,11 @@ class RecordListViewModel {
   }
 
   int fetchMonthlyTotal(String dateString) {
-    List<String> dateParts = dateString.split("年");
-    int year = int.parse(dateParts[0]);
-    int month = int.parse(dateParts[1].split("月")[0]);
+    final dateParts = dateString.split('年');
+    final year = int.parse(dateParts[0]);
+    final month = int.parse(dateParts[1].split('月')[0]);
 
-    double total = 0;
+    var total = 0.0;
 
     recordList?.forEach((record) {
       if (record.date.year == year && record.date.month == month) {

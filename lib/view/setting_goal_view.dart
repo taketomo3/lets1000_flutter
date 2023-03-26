@@ -4,7 +4,7 @@ import 'package:lets1000_android/database/goal_db.dart';
 import 'package:lets1000_android/view/common/toast.dart';
 
 class SettingGoalView extends StatefulWidget {
-  const SettingGoalView({Key? key}) : super(key: key);
+  const SettingGoalView({super.key});
 
   @override
   State<SettingGoalView> createState() => _SettingGoalViewState();
@@ -24,7 +24,6 @@ class _SettingGoalViewState extends State<SettingGoalView> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const SizedBox(height: 100),
         const Text('2023年、私は'),
@@ -69,8 +68,7 @@ class _SettingGoalViewState extends State<SettingGoalView> {
         ),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed:
-              (unit.isEmpty || goal.isEmpty) ? null : () => onRegistered(),
+          onPressed: (unit.isEmpty || goal.isEmpty) ? null : onRegistered,
           child: const Text('登録'),
         ),
       ],
@@ -79,6 +77,6 @@ class _SettingGoalViewState extends State<SettingGoalView> {
 
   void onRegistered() {
     Goal.insert(goal, unit).then((id) => {Navigator.of(context).pop()});
-    showToast(fToast, ["素敵な目標ですね！", "これから頑張りましょう！"]);
+    showToast(fToast, ['素敵な目標ですね！', 'これから頑張りましょう！']);
   }
 }

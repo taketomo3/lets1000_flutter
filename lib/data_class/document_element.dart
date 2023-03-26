@@ -1,10 +1,4 @@
 class DocumentElement {
-  int groupId;
-  int id;
-  String title;
-  String? value;
-  String? url;
-
   DocumentElement({
     required this.groupId,
     required this.id,
@@ -12,4 +6,9 @@ class DocumentElement {
     this.value,
     this.url,
   });
+  int groupId;
+  int id;
+  String title;
+  String? value;
+  String? url;
 }

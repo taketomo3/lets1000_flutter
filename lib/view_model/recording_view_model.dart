@@ -8,8 +8,8 @@ class RecordingViewModel {
     return Goal.fetchLast();
   }
 
-  onRegistered(double amount, int dateIndex, void onCreated) {
-    final List<DateTime> dateList = [
+  void onRegistered(double amount, int dateIndex, void onCreated) {
+    final dateList = [
       DateTime.now(),
       DateTime.now().subtract(const Duration(days: 1))
     ];

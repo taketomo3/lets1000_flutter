@@ -8,9 +8,11 @@ void main() {
   // package_info_plusの初期化
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const ProviderScope(
-    child: MyApp(),
-  ));
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -19,11 +21,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: '1000',
-        theme: ThemeData(
-          primarySwatch: Colors.indigo,
-        ),
-        home: const TabView());
+      title: '1000',
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+      ),
+      home: const TabView(),
+    );
   }
 }
 
@@ -39,7 +42,7 @@ class _TabViewState extends State<TabView> {
 
   final _screens = [
     const HomeView(),
-    RecordListView(),
+    const RecordListView(),
     const DocumentView(),
   ];
 

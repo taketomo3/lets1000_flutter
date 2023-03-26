@@ -2,43 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewPage extends StatefulWidget {
+  const WebViewPage({super.key, required this.url});
   final String url;
 
-  const WebViewPage({super.key, required this.url});
-
   @override
-  createState() => _WebViewPageState();
+  WebViewPageState createState() => WebViewPageState();
 }
 
-class _WebViewPageState extends State<WebViewPage> {
+class WebViewPageState extends State<WebViewPage> {
   late WebViewController controller;
 
   bool isLoading = false;
-  String loadedTitle = "";
+  String loadedTitle = '';
 
   @override
   void initState() {
     super.initState();
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageStarted: (url) {
-          setState(() {
-            isLoading = true;
-          });
-        },
-        onPageFinished: (url) async {
-          setState(() {
-            isLoading = false;
-          });
-          final t = await controller.getTitle();
-          setState(() {
-            if (t != null) {
-              loadedTitle = t;
-            }
-          });
-        },
-      ))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            setState(() {
+              isLoading = true;
+            });
+          },
+          onPageFinished: (url) async {
+            setState(() {
+              isLoading = false;
+            });
+            final t = await controller.getTitle();
+            setState(() {
+              if (t != null) {
+                loadedTitle = t;
+              }
+            });
+          },
+        ),
+      )
       ..loadRequest(Uri.parse(widget.url));
   }
 

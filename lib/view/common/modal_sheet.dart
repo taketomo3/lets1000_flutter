@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
-void showAlmostFullModal(
-    BuildContext context, Widget widget, VoidCallback updateState) {
-  showModalBottomSheet(
+Future<void> showAlmostFullModal(
+  BuildContext context,
+  Widget widget,
+  VoidCallback updateState,
+) async {
+  await showModalBottomSheet<Container>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
@@ -19,7 +22,6 @@ void showAlmostFullModal(
         child: widget,
       );
     },
-  ).then((value) {
-    updateState();
-  });
+  );
+  updateState();
 }

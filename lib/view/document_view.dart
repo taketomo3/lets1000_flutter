@@ -33,7 +33,7 @@ class _DocumentViewState extends State<DocumentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("その他")),
+      appBar: AppBar(title: const Text('その他')),
       body: !isPrepared
           ? const LinearProgressIndicator()
           : Container(
@@ -45,7 +45,7 @@ class _DocumentViewState extends State<DocumentView> {
                 groupComparator: (v1, v2) => v1.compareTo(v2),
                 itemComparator: (e1, e2) => e1.id.compareTo(e2.id),
                 separator: const SizedBox(height: 1),
-                groupSeparatorBuilder: (String value) => _groupSeparator(value),
+                groupSeparatorBuilder: _groupSeparator,
                 itemBuilder: (context, element) => _itemWidget(element),
               ),
             ),
@@ -67,19 +67,20 @@ class _DocumentViewState extends State<DocumentView> {
       }
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => WebViewPage(url: element.url!)),
+        MaterialPageRoute<WebViewPage>(
+          builder: (context) => WebViewPage(url: element.url!),
+        ),
       );
     }
 
     return GestureDetector(
-      onTap: () => onTap(),
+      onTap: onTap,
       child: Container(
         padding:
             const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
         color: Colors.white,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(element.title),
             element.value != null
