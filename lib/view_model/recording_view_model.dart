@@ -8,12 +8,17 @@ class RecordingViewModel {
     return Goal.fetchLast();
   }
 
-  void onRegistered(double amount, int dateIndex, void onCreated) {
+  Future<void> onRegistered(
+    double amount,
+    int dateIndex,
+    void onCreated,
+  ) async {
     final dateList = [
       DateTime.now(),
       DateTime.now().subtract(const Duration(days: 1))
     ];
 
-    Record.insert(amount, dateList[dateIndex]).then((id) => {onCreated});
+    final _ = await Record.insert(amount, dateList[dateIndex]);
+    return onCreated;
   }
 }

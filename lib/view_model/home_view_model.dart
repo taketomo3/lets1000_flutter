@@ -36,10 +36,9 @@ class HomeViewModel {
     _totalAmountController.add(totalAmount);
   }
 
-  void fetchGoal() {
-    Goal.fetchLast().then((value) {
-      goal = value;
-      _hasGoalController.add(value != null);
-    });
+  Future<void> fetchGoal() async {
+    final value = await Goal.fetchLast();
+    goal = value;
+    _hasGoalController.add(value != null);
   }
 }

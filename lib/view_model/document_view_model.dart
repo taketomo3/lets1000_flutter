@@ -30,25 +30,22 @@ class DocumentViewModel {
   }
 
   /* 表示に必要な非同期データを取得 */
-  void _fetchRecordList() {
-    Record.fetchAll().then((value) {
-      _recordList = value;
-      _isPreparedController.add(_allPrepared());
-    });
+  Future<void> _fetchRecordList() async {
+    final value = await Record.fetchAll();
+    _recordList = value;
+    _isPreparedController.add(_allPrepared());
   }
 
-  void _fetchGoal() {
-    Goal.fetchLast().then((value) {
-      _goal = value;
-      _isPreparedController.add(_allPrepared());
-    });
+  Future<void> _fetchGoal() async {
+    final value = await Goal.fetchLast();
+    _goal = value;
+    _isPreparedController.add(_allPrepared());
   }
 
-  void _fetchAppVer() {
-    PackageInfo.fromPlatform().then((value) {
-      _packageInfo = value;
-      _isPreparedController.add(_allPrepared());
-    });
+  Future<void> _fetchAppVer() async {
+    final value = await PackageInfo.fromPlatform();
+    _packageInfo = value;
+    _isPreparedController.add(_allPrepared());
   }
   /* ここまで */
 

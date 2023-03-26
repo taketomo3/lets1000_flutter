@@ -20,12 +20,11 @@ class _RecordingViewState extends State<RecordingView> {
   int dateIndex = 0;
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
-    viewModel.fetchGoal().then((value) {
-      setState(() => goal = value);
-    });
     fToast.init(context);
+    final g = await viewModel.fetchGoal();
+    setState(() => goal = g);
   }
 
   @override

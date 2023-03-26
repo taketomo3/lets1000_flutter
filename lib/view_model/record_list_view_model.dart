@@ -18,11 +18,10 @@ class RecordListViewModel {
     _recordListController.close();
   }
 
-  void fetchRecordList() {
-    Record.fetchAll().then((value) {
-      recordList = value;
-      _recordListController.add(value);
-    });
+  Future<void> fetchRecordList() async {
+    final value = await Record.fetchAll();
+    recordList = value;
+    _recordListController.add(value);
   }
 
   Future<Goal?> fetchGoal() {

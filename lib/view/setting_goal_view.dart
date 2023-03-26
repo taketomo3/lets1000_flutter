@@ -75,8 +75,12 @@ class _SettingGoalViewState extends State<SettingGoalView> {
     );
   }
 
-  void onRegistered() {
-    Goal.insert(goal, unit).then((id) => {Navigator.of(context).pop()});
+  Future<void> onRegistered() async {
+    await Goal.insert(goal, unit);
+    if (!mounted) {
+      return;
+    }
+    Navigator.of(context).pop();
     showToast(fToast, ['素敵な目標ですね！', 'これから頑張りましょう！']);
   }
 }

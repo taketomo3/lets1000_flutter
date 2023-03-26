@@ -16,13 +16,10 @@ class _RecordListViewState extends State<RecordListView> {
   Goal? goal;
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
-    viewModel.fetchGoal().then((value) {
-      setState(() {
-        goal = value;
-      });
-    });
+    final g = await viewModel.fetchGoal();
+    setState(() => goal = g);
 
     viewModel.recordListStream.listen((recordList) {
       setState(() {});
