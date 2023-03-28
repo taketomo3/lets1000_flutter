@@ -12,15 +12,14 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
-
-  flutter_riverpod:
-  fluttertoast: # トースト
-  grouped_list: # ListViewをまとめる
-  package_info_plus: # アプリのバージョン情報
-  path:
-  path_provider:
-  sqflite:
-  webview_flutter: ^4.0.6
+  flutter_riverpod: ^2.1.1
+  fluttertoast: ^8.2.1 # トースト
+  grouped_list: ^5.1.2 # ListViewをまとめる
+  package_info_plus: ^3.0.3 # アプリのバージョン情報
+  path: ^1.8.2 # ファイルアクセス
+  path_provider: ^2.0.14 # ファイルアクセス
+  sqflite: ^2.2.6 # ローカルDB
+  webview_flutter: ^4.0.6 # webview
 
 dev_dependencies:
   flutter_lints: ^2.0.0
