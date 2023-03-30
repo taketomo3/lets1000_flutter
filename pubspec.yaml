@@ -12,7 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
-  flutter_riverpod: ^2.1.1
+  flutter_riverpod: ^2.3.2
   fluttertoast: ^8.2.1 # トースト
   grouped_list: ^5.1.2 # ListViewをまとめる
   package_info_plus: ^3.0.3 # アプリのバージョン情報

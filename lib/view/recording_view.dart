@@ -1,91 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/database/record_db.dart';
+import 'package:lets1000_android/repository/goal_repository.dart';
+import 'package:lets1000_android/view/common/error_view.dart';
 import 'package:lets1000_android/view/common/toast.dart';
-import 'package:lets1000_android/view_model/recording_view_model.dart';
 
-class RecordingView extends StatefulWidget {
+class RecordingView extends ConsumerStatefulWidget {
   const RecordingView({super.key});
 
   @override
-  State<RecordingView> createState() => _RecordingViewState();
+  RecordingViewState createState() => RecordingViewState();
 }
 
-class _RecordingViewState extends State<RecordingView> {
-  final viewModel = RecordingViewModel();
-  Goal? goal;
-  FToast fToast = FToast();
-
+class RecordingViewState extends ConsumerState<RecordingView> {
   double? amount;
   int dateIndex = 0;
 
   @override
-  Future<void> initState() async {
-    super.initState();
-    fToast.init(context);
-    final g = await viewModel.fetchGoal();
-    setState(() => goal = g);
+  Widget build(BuildContext context) {
+    final goal = ref.watch(goalProvider);
+    return goal.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (error, _) => errorView(error),
+      data: (goal) => Column(
+        children: [
+          const SizedBox(height: 100),
+          dateChooseWidget(),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  autofocus: true,
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() => amount = double.tryParse(value));
+                  },
+                ),
+              ),
+              Text(goal?.unit ?? '')
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text('${goal?.goal}しました！！'),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            onPressed: amount == null ? null : () => onRegister(),
+            child: const Text('記録する'),
+          ),
+        ],
+      ),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 100),
-        dateChooseWidget(),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            SizedBox(
-              width: 100,
-              child: TextField(
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                onChanged: (value) {
-                  setState(() => amount = double.tryParse(value));
-                },
-              ),
-            ),
-            Text(goal?.unit ?? '')
-          ],
-        ),
-        const SizedBox(height: 10),
-        Text('${goal?.goal}しました！！'),
-        const SizedBox(height: 30),
-        ElevatedButton(
-          onPressed: amount == null
-              ? null
-              : () {
-                  viewModel.onRegistered(
-                    amount!,
-                    dateIndex,
-                    Navigator.of(context).pop(),
-                  );
-                  showToast(
-                    fToast,
-                    [
-                      'ナイス！！',
-                      'お疲れ様です！！',
-                      'いい調子ですね！',
-                      '！！！！',
-                      '記録しました！',
-                    ],
-                  );
-                },
-          child: const Text('記録する'),
-        ),
+  void onRegister() {
+    final dateList = [
+      DateTime.now(),
+      DateTime.now().subtract(const Duration(days: 1))
+    ];
+    Record.insert(amount!, dateList[dateIndex]);
+
+    Navigator.of(context).pop();
+    showToast(
+      FToast().init(context),
+      [
+        'ナイス！！',
+        'お疲れ様です！！',
+        'いい調子ですね！',
+        '！！！！',
+        '記録しました！',
       ],
     );
   }
 
   Row dateChooseWidget() {
-    void updateDate(int? i) => setState(() {
-          if (i != null) {
-            dateIndex = i;
-          }
-        });
+    void updateDate(int? i) => setState(() => dateIndex = i!);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

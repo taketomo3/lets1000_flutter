@@ -1,77 +1,67 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/repository/goal_repository.dart';
+import 'package:lets1000_android/repository/record_repository.dart';
+import 'package:lets1000_android/view/common/error_view.dart';
 import 'package:lets1000_android/view/common/modal_sheet.dart';
 import 'package:lets1000_android/view/recording_view.dart';
 import 'package:lets1000_android/view/setting_goal_view.dart';
-import 'package:lets1000_android/view_model/home_view_model.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _HomeViewState();
+  HomeViewState createState() => HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
-  final viewModel = HomeViewModel();
-  bool? hasGoal;
-
-  @override
-  void initState() {
-    super.initState();
-    viewModel.hasGoalStream.listen((b) {
-      setState(() => hasGoal = b);
-    });
-
-    viewModel.totalAmountStream.listen((event) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    viewModel.dispose();
-  }
-
+class HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
-    return hasGoal == null
-        ? const LinearProgressIndicator()
-        : hasGoal == true
-            ? progressView(context)
-            : settingGoalView(context);
-  }
-
-  Widget progressView(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('今年の目標'),
-            Text('1000${viewModel.goal?.unit} ${viewModel.goal?.goal}します！！！'),
-            const SizedBox(height: 120),
-            circleView(viewModel.totalAmount ?? 0),
-            const SizedBox(height: 150),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          showAlmostFullModal(context, const RecordingView(), updateState);
-        },
-      ),
+    final goal = ref.watch(goalProvider);
+    return goal.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (error, _) => errorView(error),
+      data: (goal) =>
+          goal == null ? settingGoalView(context) : progressView(context, goal),
     );
   }
 
-  void updateState() {
-    viewModel
-      ..fetchGoal()
-      ..fetchTotalAmount();
-    setState(() {});
+  Widget progressView(BuildContext context, Goal goal) {
+    final totalAmount = ref.watch(totalAmountProvider);
+
+    return totalAmount.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (error, _) => errorView(error),
+      data: (amount) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('今年の目標'),
+              Text('1000${goal.unit} ${goal.goal}します！！！'),
+              const SizedBox(height: 120),
+              circleView(amount),
+              const SizedBox(height: 150),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            showAlmostFullModal(
+              context,
+              const RecordingView(),
+              () {
+                // do something?
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 
   Widget settingGoalView(BuildContext context) {
@@ -96,7 +86,9 @@ class _HomeViewState extends State<HomeView> {
             onPressed: () => showAlmostFullModal(
               context,
               const SettingGoalView(),
-              updateState,
+              () {
+                // do something?
+              },
             ),
             child: const Text('目標を設定'),
           ),
