@@ -20,7 +20,7 @@ class HomeView extends ConsumerStatefulWidget {
 class HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
-    final goal = ref.watch(goalProvider);
+    final goal = ref.watch(asyncGoalProvider);
     return goal.when(
       loading: () => const LinearProgressIndicator(),
       error: (error, _) => errorView(error),
@@ -30,36 +30,30 @@ class HomeViewState extends ConsumerState<HomeView> {
   }
 
   Widget progressView(BuildContext context, Goal goal) {
-    final totalAmount = ref.watch(totalAmountProvider);
-
-    return totalAmount.when(
-      loading: () => const LinearProgressIndicator(),
-      error: (error, _) => errorView(error),
-      data: (amount) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('今年の目標'),
-              Text('1000${goal.unit} ${goal.goal}します！！！'),
-              const SizedBox(height: 120),
-              circleView(amount),
-              const SizedBox(height: 150),
-            ],
-          ),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('今年の目標'),
+            Text('1000${goal.unit} ${goal.goal}します！！！'),
+            const SizedBox(height: 120),
+            circleView(ref.watch(totalAmountProvider)),
+            const SizedBox(height: 150),
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            showAlmostFullModal(
-              context,
-              const RecordingView(),
-              () {
-                // do something?
-              },
-            );
-          },
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          showAlmostFullModal(
+            context,
+            const RecordingView(),
+            () {
+              // do something?
+            },
+          );
+        },
       ),
     );
   }

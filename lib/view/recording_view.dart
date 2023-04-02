@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lets1000_android/database/record_db.dart';
 import 'package:lets1000_android/repository/goal_repository.dart';
-import 'package:lets1000_android/view/common/error_view.dart';
 import 'package:lets1000_android/view/common/toast.dart';
 
 class RecordingView extends ConsumerStatefulWidget {
@@ -20,59 +19,35 @@ class RecordingViewState extends ConsumerState<RecordingView> {
   @override
   Widget build(BuildContext context) {
     final goal = ref.watch(goalProvider);
-    return goal.when(
-      loading: () => const LinearProgressIndicator(),
-      error: (error, _) => errorView(error),
-      data: (goal) => Column(
-        children: [
-          const SizedBox(height: 100),
-          dateChooseWidget(),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 100,
-                child: TextField(
-                  autofocus: true,
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) {
-                    setState(() => amount = double.tryParse(value));
-                  },
-                ),
+    return Column(
+      children: [
+        const SizedBox(height: 100),
+        dateChooseWidget(),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: 100,
+              child: TextField(
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() => amount = double.tryParse(value));
+                },
               ),
-              Text(goal?.unit ?? '')
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text('${goal?.goal}しました！！'),
-          const SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: amount == null ? null : () => onRegister(),
-            child: const Text('記録する'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void onRegister() {
-    final dateList = [
-      DateTime.now(),
-      DateTime.now().subtract(const Duration(days: 1))
-    ];
-    Record.insert(amount!, dateList[dateIndex]);
-
-    Navigator.of(context).pop();
-    showToast(
-      FToast().init(context),
-      [
-        'ナイス！！',
-        'お疲れ様です！！',
-        'いい調子ですね！',
-        '！！！！',
-        '記録しました！',
+            ),
+            Text(goal?.unit ?? '')
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text('${goal?.goal}しました！！'),
+        const SizedBox(height: 30),
+        ElevatedButton(
+          onPressed: amount == null ? null : onRegister,
+          child: const Text('記録する'),
+        ),
       ],
     );
   }
@@ -105,5 +80,29 @@ class RecordingViewState extends ConsumerState<RecordingView> {
         ),
       ],
     );
+  }
+
+  void onRegister() {
+    createRecord();
+
+    Navigator.of(context).pop();
+    showToast(
+      FToast().init(context),
+      [
+        'ナイス！！',
+        'お疲れ様です！！',
+        'いい調子ですね！',
+        '！！！！',
+        '記録しました！',
+      ],
+    );
+  }
+
+  void createRecord() {
+    final dateList = [
+      DateTime.now(),
+      DateTime.now().subtract(const Duration(days: 1))
+    ];
+    Record.insert(amount!, dateList[dateIndex]);
   }
 }
