@@ -1,25 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:lets1000_android/database/goal_db.dart';
 import 'package:lets1000_android/database/record_db.dart';
 import 'package:lets1000_android/repository/goal_repository.dart';
 import 'package:lets1000_android/repository/record_repository.dart';
 import 'package:lets1000_android/view/common/error_view.dart';
 
-class RecordListView extends ConsumerStatefulWidget {
-  const RecordListView({super.key});
+class RecordListViewState extends ConsumerWidget {
+  const RecordListViewState({super.key});
 
   @override
-  RecordListViewState createState() => RecordListViewState();
-}
-
-class RecordListViewState extends ConsumerState<RecordListView> {
-  late final Goal? goal = ref.watch(goalProvider);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final recordList = ref.watch(asyncRecordListProvider);
+    final goalUnit = ref.watch(goalProvider)?.unit ?? '';
 
     return Scaffold(
       appBar: AppBar(title: const Text('頑張った記録')),
@@ -29,7 +22,7 @@ class RecordListViewState extends ConsumerState<RecordListView> {
         child: recordList.when(
           loading: () => const LinearProgressIndicator(),
           error: (error, _) => errorView(error),
-          data: (recordList) => (goal == null || recordList.isEmpty)
+          data: (recordList) => (goalUnit == '' || recordList.isEmpty)
               ? noRecordView()
               : GroupedListView(
                   elements: recordList,
@@ -41,8 +34,10 @@ class RecordListViewState extends ConsumerState<RecordListView> {
                   useStickyGroupSeparators: true,
                   stickyHeaderBackgroundColor: const Color(0xFFECEFF1),
                   separator: const SizedBox(height: 1),
-                  groupSeparatorBuilder: _groupSeparator,
-                  itemBuilder: (context, element) => _itemWidget(element),
+                  groupSeparatorBuilder: (value) =>
+                      _groupSeparator(value, goalUnit, ref),
+                  itemBuilder: (context, element) =>
+                      _itemWidget(element, goalUnit),
                 ),
         ),
       ),
@@ -55,18 +50,18 @@ class RecordListViewState extends ConsumerState<RecordListView> {
     );
   }
 
-  Widget _groupSeparator(String value) {
+  Widget _groupSeparator(String dateValue, String goalUnit, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.only(top: 20, bottom: 4, right: 20, left: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            value,
+            dateValue,
             style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
           ),
           Text(
-            '合計: ${fetchMonthlyTotal(value)} ${goal?.unit}',
+            '合計: ${fetchMonthlyTotal(dateValue, ref)} $goalUnit',
             style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
           ),
         ],
@@ -74,7 +69,7 @@ class RecordListViewState extends ConsumerState<RecordListView> {
     );
   }
 
-  Widget _itemWidget(Record record) {
+  Widget _itemWidget(Record record, String goalUnit) {
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
       color: Colors.white,
@@ -82,13 +77,13 @@ class RecordListViewState extends ConsumerState<RecordListView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('${record.date.month}月 ${record.date.day}日'),
-          Text('${((record.amount) * 10).ceil() / 10} ${goal?.unit}')
+          Text('${((record.amount) * 10).ceil() / 10} $goalUnit')
         ],
       ),
     );
   }
 
-  int fetchMonthlyTotal(String dateString) {
+  int fetchMonthlyTotal(String dateString, WidgetRef ref) {
     final dateParts = dateString.split('年');
     final year = int.parse(dateParts[0]);
     final month = int.parse(dateParts[1].split('月')[0]);

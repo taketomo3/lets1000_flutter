@@ -9,29 +9,24 @@ import 'package:lets1000_android/repository/package_info_repository.dart';
 import 'package:lets1000_android/repository/record_repository.dart';
 import 'package:lets1000_android/view/common/webview.dart';
 
-class DocumentView extends ConsumerStatefulWidget {
+class DocumentView extends ConsumerWidget {
   const DocumentView({super.key});
 
   @override
-  DocumentViewState createState() => DocumentViewState();
-}
-
-class DocumentViewState extends ConsumerState<DocumentView> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text('その他')),
       body: Container(
         padding: const EdgeInsets.only(left: 20, right: 20),
         color: Colors.blueGrey[50],
         child: GroupedListView(
-          elements: fetchElements(),
+          elements: fetchElements(ref),
           groupBy: (e) => fetchGroup(e.groupId).id.toString(),
           groupComparator: (v1, v2) => v1.compareTo(v2),
           itemComparator: (e1, e2) => e1.id.compareTo(e2.id),
           separator: const SizedBox(height: 1),
           groupSeparatorBuilder: _groupSeparator,
-          itemBuilder: (context, element) => _itemWidget(element),
+          itemBuilder: _itemWidget,
         ),
       ),
     );
@@ -45,7 +40,7 @@ class DocumentViewState extends ConsumerState<DocumentView> {
     );
   }
 
-  Widget _itemWidget(DocumentElement element) {
+  Widget _itemWidget(BuildContext context, DocumentElement element) {
     void onTap() {
       if (element.url == null) {
         return;
@@ -90,7 +85,7 @@ class DocumentViewState extends ConsumerState<DocumentView> {
     return groups.firstWhere((element) => element.id == id);
   }
 
-  List<DocumentElement> fetchElements() {
+  List<DocumentElement> fetchElements(WidgetRef ref) {
     final packageInfo = ref.watch(packageInfoProvider).value;
     final goalUnit = ref.watch(goalProvider)?.unit ?? '';
 
