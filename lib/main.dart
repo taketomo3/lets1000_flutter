@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets1000_android/View/record_list_view.dart';
 import 'package:lets1000_android/view/document_view.dart';
 import 'package:lets1000_android/view/home_view.dart';
+import 'package:lets1000_android/view/record_list_view.dart';
 
 void main() {
   // package_info_plusの初期化

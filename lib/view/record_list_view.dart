@@ -6,8 +6,8 @@ import 'package:lets1000_android/repository/goal_repository.dart';
 import 'package:lets1000_android/repository/record_repository.dart';
 import 'package:lets1000_android/view/common/error_view.dart';
 
-class RecordListViewState extends ConsumerWidget {
-  const RecordListViewState({super.key});
+class RecordListView extends ConsumerWidget {
+  const RecordListView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
