@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$MyState {
   Goal? get goal => throw _privateConstructorUsedError;
+  List<Record> get recordList => throw _privateConstructorUsedError;
   int get totalRecordAmount => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -28,7 +29,7 @@ abstract class $MyStateCopyWith<$Res> {
   factory $MyStateCopyWith(MyState value, $Res Function(MyState) then) =
       _$MyStateCopyWithImpl<$Res, MyState>;
   @useResult
-  $Res call({Goal? goal, int totalRecordAmount});
+  $Res call({Goal? goal, List<Record> recordList, int totalRecordAmount});
 
   $GoalCopyWith<$Res>? get goal;
 }
@@ -47,6 +48,7 @@ class _$MyStateCopyWithImpl<$Res, $Val extends MyState>
   @override
   $Res call({
     Object? goal = freezed,
+    Object? recordList = null,
     Object? totalRecordAmount = null,
   }) {
     return _then(_value.copyWith(
@@ -54,6 +56,10 @@ class _$MyStateCopyWithImpl<$Res, $Val extends MyState>
           ? _value.goal
           : goal // ignore: cast_nullable_to_non_nullable
               as Goal?,
+      recordList: null == recordList
+          ? _value.recordList
+          : recordList // ignore: cast_nullable_to_non_nullable
+              as List<Record>,
       totalRecordAmount: null == totalRecordAmount
           ? _value.totalRecordAmount
           : totalRecordAmount // ignore: cast_nullable_to_non_nullable
@@ -81,7 +87,7 @@ abstract class _$$_MyStateCopyWith<$Res> implements $MyStateCopyWith<$Res> {
       __$$_MyStateCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Goal? goal, int totalRecordAmount});
+  $Res call({Goal? goal, List<Record> recordList, int totalRecordAmount});
 
   @override
   $GoalCopyWith<$Res>? get goal;
@@ -98,6 +104,7 @@ class __$$_MyStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? goal = freezed,
+    Object? recordList = null,
     Object? totalRecordAmount = null,
   }) {
     return _then(_$_MyState(
@@ -105,6 +112,10 @@ class __$$_MyStateCopyWithImpl<$Res>
           ? _value.goal
           : goal // ignore: cast_nullable_to_non_nullable
               as Goal?,
+      recordList: null == recordList
+          ? _value._recordList
+          : recordList // ignore: cast_nullable_to_non_nullable
+              as List<Record>,
       totalRecordAmount: null == totalRecordAmount
           ? _value.totalRecordAmount
           : totalRecordAmount // ignore: cast_nullable_to_non_nullable
@@ -116,18 +127,31 @@ class __$$_MyStateCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_MyState implements _MyState {
-  const _$_MyState({this.goal = null, this.totalRecordAmount = 0});
+  const _$_MyState(
+      {this.goal = null,
+      final List<Record> recordList = const [],
+      this.totalRecordAmount = 0})
+      : _recordList = recordList;
 
   @override
   @JsonKey()
   final Goal? goal;
+  final List<Record> _recordList;
+  @override
+  @JsonKey()
+  List<Record> get recordList {
+    if (_recordList is EqualUnmodifiableListView) return _recordList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_recordList);
+  }
+
   @override
   @JsonKey()
   final int totalRecordAmount;
 
   @override
   String toString() {
-    return 'MyState(goal: $goal, totalRecordAmount: $totalRecordAmount)';
+    return 'MyState(goal: $goal, recordList: $recordList, totalRecordAmount: $totalRecordAmount)';
   }
 
   @override
@@ -136,12 +160,15 @@ class _$_MyState implements _MyState {
         (other.runtimeType == runtimeType &&
             other is _$_MyState &&
             (identical(other.goal, goal) || other.goal == goal) &&
+            const DeepCollectionEquality()
+                .equals(other._recordList, _recordList) &&
             (identical(other.totalRecordAmount, totalRecordAmount) ||
                 other.totalRecordAmount == totalRecordAmount));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, goal, totalRecordAmount);
+  int get hashCode => Object.hash(runtimeType, goal,
+      const DeepCollectionEquality().hash(_recordList), totalRecordAmount);
 
   @JsonKey(ignore: true)
   @override
@@ -151,11 +178,15 @@ class _$_MyState implements _MyState {
 }
 
 abstract class _MyState implements MyState {
-  const factory _MyState({final Goal? goal, final int totalRecordAmount}) =
-      _$_MyState;
+  const factory _MyState(
+      {final Goal? goal,
+      final List<Record> recordList,
+      final int totalRecordAmount}) = _$_MyState;
 
   @override
   Goal? get goal;
+  @override
+  List<Record> get recordList;
   @override
   int get totalRecordAmount;
   @override
