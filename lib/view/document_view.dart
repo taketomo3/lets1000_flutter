@@ -4,10 +4,10 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:lets1000_android/constant.dart';
 import 'package:lets1000_android/data_class/document_element.dart';
 import 'package:lets1000_android/data_class/group_element.dart';
-import 'package:lets1000_android/repository/goal_repository.dart';
 import 'package:lets1000_android/repository/package_info_repository.dart';
-import 'package:lets1000_android/repository/record_repository.dart';
 import 'package:lets1000_android/view/common/webview.dart';
+import 'package:lets1000_android/view_model/document_view_model.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
 class DocumentView extends ConsumerWidget {
   const DocumentView({super.key});
@@ -86,33 +86,36 @@ class DocumentView extends ConsumerWidget {
   }
 
   List<DocumentElement> fetchElements(WidgetRef ref) {
+    final state = ref.watch(myStateProvider);
+    final viewModel = ref.watch(documentViewModelProvider.notifier);
+
     final packageInfo = ref.watch(packageInfoProvider).value;
-    final goalUnit = ref.watch(goalProvider)?.unit ?? '';
+    final goalUnit = state.goal?.unit ?? '';
 
     return [
       DocumentElement(
         groupId: 1,
         id: 1,
         title: '合計数',
-        value: '${ref.watch(totalAmountProvider)} $goalUnit',
+        value: '${state.totalRecordAmount} $goalUnit',
       ),
       DocumentElement(
         groupId: 1,
         id: 2,
         title: '登録回数',
-        value: '${ref.watch(totalRecordCountProvider)} 回',
+        value: '${state.recordList.length} 回',
       ),
       DocumentElement(
         groupId: 1,
         id: 3,
         title: '1回あたりの平均',
-        value: '${ref.watch(averageAmountProvider)} $goalUnit',
+        value: '${viewModel.fetchAverageAmount()} $goalUnit',
       ),
       DocumentElement(
         groupId: 1,
         id: 4,
         title: 'このペースでいくと2023年中に',
-        value: '${ref.watch(expectedTotalAmountProvider)} $goalUnit',
+        value: '${viewModel.fetchExpectedTotalAmount()} $goalUnit',
       ),
       DocumentElement(
         groupId: 2,
