@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lets1000_android/state/state.dart';
 import 'package:lets1000_android/view/document_view.dart';
 import 'package:lets1000_android/view/home_view.dart';
 import 'package:lets1000_android/view/record_list_view.dart';
 
+const myState = MyState();
 void main() {
   // package_info_plusの初期化
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -42,8 +43,8 @@ class _TabViewState extends State<TabView> {
 
   final _screens = [
     const HomeView(),
-    const RecordListView(),
-    const DocumentView(),
+    // const RecordListView(),
+    // const DocumentView(),
   ];
 
   void _onItemTapped(int index) {
