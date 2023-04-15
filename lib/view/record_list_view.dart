@@ -1,45 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grouped_list/grouped_list.dart';
-import 'package:lets1000_android/database/record_db.dart';
-import 'package:lets1000_android/repository/goal_repository.dart';
-import 'package:lets1000_android/repository/record_repository.dart';
-import 'package:lets1000_android/view/common/error_view.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lets1000_android/model/record.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
+import 'package:lets1000_android/view_model/record_list_view_model.dart';
 
-class RecordListView extends ConsumerWidget {
+class RecordListView extends HookConsumerWidget {
   const RecordListView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recordList = ref.watch(asyncRecordListProvider);
-    final goalUnit = ref.watch(goalProvider)?.unit ?? '';
+    final state = ref.watch(myStateProvider);
+    final viewModel = ref.watch(recordListViewModelProvider.notifier);
+
+    final goalUnit = state.goal?.unit ?? '';
 
     return Scaffold(
       appBar: AppBar(title: const Text('頑張った記録')),
       body: Container(
         padding: const EdgeInsets.only(left: 20, right: 20),
         color: Colors.blueGrey[50],
-        child: recordList.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (error, _) => errorView(error),
-          data: (recordList) => (goalUnit == '' || recordList.isEmpty)
-              ? noRecordView()
-              : GroupedListView(
-                  elements: recordList,
-                  groupBy: (record) =>
-                      '${record.date.year}年 ${record.date.month}月',
-                  order: GroupedListOrder.DESC,
-                  itemComparator: (element1, element2) =>
-                      element2.date.compareTo(element1.date),
-                  useStickyGroupSeparators: true,
-                  stickyHeaderBackgroundColor: const Color(0xFFECEFF1),
-                  separator: const SizedBox(height: 1),
-                  groupSeparatorBuilder: (value) =>
-                      _groupSeparator(value, goalUnit, ref),
-                  itemBuilder: (context, element) =>
-                      _itemWidget(element, goalUnit),
-                ),
-        ),
+        child: state.goal == null || state.recordList.isEmpty
+            ? noRecordView()
+            : GroupedListView(
+                elements: state.recordList,
+                groupBy: (record) =>
+                    '${record.date.year}年 ${record.date.month}月',
+                order: GroupedListOrder.DESC,
+                itemComparator: (r1, r2) => r2.date.compareTo(r1.date),
+                useStickyGroupSeparators: true,
+                stickyHeaderBackgroundColor: const Color(0xFFECEFF1),
+                separator: const SizedBox(height: 1),
+                groupSeparatorBuilder: (ym) =>
+                    _groupSeparator(viewModel, ym, goalUnit),
+                itemBuilder: (_, record) => _itemWidget(record, goalUnit),
+              ),
       ),
     );
   }
@@ -50,18 +45,22 @@ class RecordListView extends ConsumerWidget {
     );
   }
 
-  Widget _groupSeparator(String dateValue, String goalUnit, WidgetRef ref) {
+  Widget _groupSeparator(
+    RecordListViewModelProvider viewModel,
+    String ym,
+    String goalUnit,
+  ) {
     return Container(
       padding: const EdgeInsets.only(top: 20, bottom: 4, right: 20, left: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            dateValue,
+            ym,
             style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
           ),
           Text(
-            '合計: ${fetchMonthlyTotal(dateValue, ref)} $goalUnit',
+            '合計: ${viewModel.fetchMonthlyTotal(ym)} $goalUnit',
             style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w300),
           ),
         ],
@@ -81,21 +80,5 @@ class RecordListView extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  int fetchMonthlyTotal(String dateString, WidgetRef ref) {
-    final dateParts = dateString.split('年');
-    final year = int.parse(dateParts[0]);
-    final month = int.parse(dateParts[1].split('月')[0]);
-
-    var total = 0.0;
-
-    for (final record in ref.watch(recordListProvider)) {
-      if (record.date.year == year && record.date.month == month) {
-        total += record.amount;
-      }
-    }
-
-    return total.toInt();
   }
 }
