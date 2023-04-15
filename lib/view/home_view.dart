@@ -1,44 +1,42 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lets1000_android/database/goal_db.dart';
-import 'package:lets1000_android/repository/goal_repository.dart';
-import 'package:lets1000_android/repository/record_repository.dart';
-import 'package:lets1000_android/view/common/error_view.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lets1000_android/state/state.dart';
 import 'package:lets1000_android/view/common/modal_sheet.dart';
 import 'package:lets1000_android/view/recording_view.dart';
 import 'package:lets1000_android/view/setting_goal_view.dart';
+import 'package:lets1000_android/view_model/home_view_model.dart';
 
-class HomeView extends ConsumerStatefulWidget {
+class HomeView extends HookConsumerWidget {
   const HomeView({super.key});
 
   @override
-  HomeViewState createState() => HomeViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(homeViewModelProvider);
+    final viewModel = ref.watch(homeViewModelProvider.notifier);
 
-class HomeViewState extends ConsumerState<HomeView> {
-  @override
-  Widget build(BuildContext context) {
-    final goal = ref.watch(asyncGoalProvider);
-    return goal.when(
-      loading: () => const LinearProgressIndicator(),
-      error: (error, _) => errorView(error),
-      data: (goal) =>
-          goal == null ? settingGoalView(context) : progressView(context, goal),
-    );
+    return state.goal == null
+        ? settingGoalView(context, viewModel)
+        : progressView(context, state, viewModel);
   }
 
-  Widget progressView(BuildContext context, Goal goal) {
+  Widget progressView(
+    BuildContext context,
+    MyState state,
+    HomeViewModelProvider viewModel,
+  ) {
+    final goalObject = state.goal!;
+
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('今年の目標'),
-            Text('1000${goal.unit} ${goal.goal}します！！！'),
+            Text('1000${goalObject.unit} ${goalObject.goal}します！！！'),
             const SizedBox(height: 120),
-            circleView(ref.watch(totalAmountProvider)),
+            circleView(state.totalRecordAmount),
             const SizedBox(height: 150),
           ],
         ),
@@ -46,19 +44,18 @@ class HomeViewState extends ConsumerState<HomeView> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          showAlmostFullModal(
-            context,
-            const RecordingView(),
-            () {
-              // do something?
-            },
-          );
+          showAlmostFullModal(context, const RecordingView(), () {
+            viewModel.fetchTotalRecordAmount();
+          });
         },
       ),
     );
   }
 
-  Widget settingGoalView(BuildContext context) {
+  Widget settingGoalView(
+    BuildContext context,
+    HomeViewModelProvider viewModel,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -81,7 +78,7 @@ class HomeViewState extends ConsumerState<HomeView> {
               context,
               const SettingGoalView(),
               () {
-                // do something?
+                viewModel.fetchGoal();
               },
             ),
             child: const Text('目標を設定'),
