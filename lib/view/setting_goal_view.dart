@@ -1,28 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lets1000_android/database/goal_db.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lets1000_android/view/common/toast.dart';
+import 'package:lets1000_android/view_model/setting_goal_view_model.dart';
 
-class SettingGoalView extends StatefulWidget {
+class SettingGoalView extends HookConsumerWidget {
   const SettingGoalView({super.key});
 
   @override
-  State<SettingGoalView> createState() => _SettingGoalViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unit = useState<String>('');
+    final goal = useState<String>('');
 
-class _SettingGoalViewState extends State<SettingGoalView> {
-  String unit = '';
-  String goal = '';
-  FToast fToast = FToast();
+    final viewModel = ref.watch(settingGoalViewModelProvider.notifier);
 
-  @override
-  void initState() {
-    super.initState();
-    fToast.init(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 100),
@@ -39,9 +31,7 @@ class _SettingGoalViewState extends State<SettingGoalView> {
                 autofocus: true,
                 decoration: const InputDecoration(hintText: '時間'),
                 onChanged: (value) {
-                  setState(() {
-                    unit = value;
-                  });
+                  unit.value = value;
                 },
               ),
             )
@@ -57,9 +47,7 @@ class _SettingGoalViewState extends State<SettingGoalView> {
               child: TextField(
                 decoration: const InputDecoration(hintText: '読書'),
                 onChanged: (value) {
-                  setState(() {
-                    goal = value;
-                  });
+                  goal.value = value;
                 },
               ),
             ),
@@ -68,19 +56,32 @@ class _SettingGoalViewState extends State<SettingGoalView> {
         ),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: (unit.isEmpty || goal.isEmpty) ? null : onRegistered,
+          onPressed: (unit.value.isEmpty || goal.value.isEmpty)
+              ? null
+              : () => onRegistered(
+                    context,
+                    viewModel,
+                    goal.value,
+                    unit.value,
+                  ),
           child: const Text('登録'),
         ),
       ],
     );
   }
 
-  Future<void> onRegistered() async {
-    await Goal.insert(goal, unit);
-    if (!mounted) {
-      return;
-    }
+  Future<void> onRegistered(
+    BuildContext context,
+    SettingGoalViewModelProvider viewModel,
+    String goal,
+    String unit,
+  ) async {
+    final _ = viewModel.addGoal(goal, unit);
+
     Navigator.of(context).pop();
-    showToast(fToast, ['素敵な目標ですね！', 'これから頑張りましょう！']);
+    showToast(
+      FToast().init(context),
+      viewModel.toastMessages(),
+    );
   }
 }
