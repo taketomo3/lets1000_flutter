@@ -7,24 +7,26 @@ import 'package:lets1000_android/view/common/modal_sheet.dart';
 import 'package:lets1000_android/view/recording_view.dart';
 import 'package:lets1000_android/view/setting_goal_view.dart';
 import 'package:lets1000_android/view_model/home_view_model.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
 class HomeView extends HookConsumerWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(homeViewModelProvider);
+    final state = ref.watch(myStateProvider);
     final viewModel = ref.watch(homeViewModelProvider.notifier);
 
-    return state.goal == null
+    return ref.watch(myStateProvider).goal == null
         ? settingGoalView(context, viewModel)
-        : progressView(context, state, viewModel);
+        : progressView(context, state, viewModel, ref);
   }
 
   Widget progressView(
     BuildContext context,
     MyState state,
     HomeViewModelProvider viewModel,
+    WidgetRef ref,
   ) {
     final goalObject = state.goal!;
 
@@ -44,9 +46,7 @@ class HomeView extends HookConsumerWidget {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          showAlmostFullModal(context, const RecordingView(), () {
-            viewModel.fetchTotalRecordAmount();
-          });
+          showAlmostFullModal(context, const RecordingView(), () {});
         },
       ),
     );
@@ -74,13 +74,8 @@ class HomeView extends HookConsumerWidget {
           ),
           const SizedBox(height: 100),
           TextButton(
-            onPressed: () => showAlmostFullModal(
-              context,
-              const SettingGoalView(),
-              () {
-                viewModel.fetchGoal();
-              },
-            ),
+            onPressed: () =>
+                showAlmostFullModal(context, const SettingGoalView(), () {}),
             child: const Text('目標を設定'),
           ),
         ],

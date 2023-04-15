@@ -1,35 +1,26 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:lets1000_android/database/goal_db.dart';
 import 'package:lets1000_android/database/record_db.dart';
-import 'package:lets1000_android/main.dart';
 import 'package:lets1000_android/model/record.dart';
-import 'package:lets1000_android/repository/goal_repository.dart';
 import 'package:lets1000_android/repository/record_repository.dart';
 import 'package:lets1000_android/state/state.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
 final recordingViewModelProvider =
     StateNotifierProvider<RecordingViewModelProvider, MyState>(
   (ref) => RecordingViewModelProvider(
-    GoalRepository(GoalDatabase()),
-    RecordRepository(RecordDatabase()),
+    ref.watch(myStateProvider.notifier),
   ),
 );
 
 class RecordingViewModelProvider extends StateNotifier<MyState> {
   RecordingViewModelProvider(
-    this._goalRepository,
-    this._recordRepository,
-  ) : super(myState) {
-    fetchGoal();
+    MyStateNotifier myStateNotifier,
+  ) : super(myStateNotifier.state) {
+    _myStateNotifier = myStateNotifier;
   }
 
-  final GoalRepository _goalRepository;
-  final RecordRepository _recordRepository;
-
-  Future<void> fetchGoal() async {
-    final goal = await _goalRepository.fetchGoal();
-    state = state.copyWith(goal: goal);
-  }
+  MyStateNotifier? _myStateNotifier;
+  final RecordRepository _recordRepository = RecordRepository(RecordDatabase());
 
   Future<Record> insertRecord(double amount, int dateIndex) async {
     final date = fetchDateFromIndex(dateIndex);
@@ -41,10 +32,7 @@ class RecordingViewModelProvider extends StateNotifier<MyState> {
       ),
     );
 
-    state = state.copyWith(
-      totalRecordAmount: state.totalRecordAmount + amount.toInt(),
-    );
-
+    _myStateNotifier?.updateMyState(null, record);
     return record;
   }
 

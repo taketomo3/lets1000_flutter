@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lets1000_android/view/common/toast.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 import 'package:lets1000_android/view_model/recording_view_model.dart';
 
 class RecordingView extends HookConsumerWidget {
@@ -13,7 +14,7 @@ class RecordingView extends HookConsumerWidget {
     final amount = useState<double?>(null);
     final dateIndex = useState<int>(0);
 
-    final state = ref.watch(recordingViewModelProvider);
+    final state = ref.watch(myStateProvider);
     final viewModel = ref.watch(recordingViewModelProvider.notifier);
 
     return Column(
