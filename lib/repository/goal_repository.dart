@@ -1,11 +1,16 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lets1000_android/database/goal_db.dart';
+import 'package:lets1000_android/model/goal.dart';
 
-final asyncGoalProvider = FutureProvider<Goal?>((ref) async {
-  return Goal.fetchLast();
-});
+class GoalRepository {
+  GoalRepository(this._goalDatabase);
 
-final goalProvider = Provider<Goal?>((ref) {
-  final goal = ref.watch(asyncGoalProvider);
-  return goal.value;
-});
+  final GoalDatabase _goalDatabase;
+
+  Future<Goal?> fetchGoal() async {
+    return _goalDatabase.fetchGoal();
+  }
+
+  Future<Goal> addGoal(Goal goal) async {
+    return _goalDatabase.insert(goal);
+  }
+}
