@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lets1000_android/database/record_db.dart';
-import 'package:lets1000_android/repository/goal_repository.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lets1000_android/view/common/toast.dart';
+import 'package:lets1000_android/view_model/recording_view_model.dart';
 
-class RecordingView extends ConsumerStatefulWidget {
+class RecordingView extends HookConsumerWidget {
   const RecordingView({super.key});
 
   @override
-  RecordingViewState createState() => RecordingViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final amount = useState<double?>(null);
+    final dateIndex = useState<int>(0);
 
-class RecordingViewState extends ConsumerState<RecordingView> {
-  double? amount;
-  int dateIndex = 0;
+    final state = ref.watch(recordingViewModelProvider);
+    final viewModel = ref.watch(recordingViewModelProvider.notifier);
 
-  @override
-  Widget build(BuildContext context) {
-    final goal = ref.watch(goalProvider);
     return Column(
       children: [
         const SizedBox(height: 100),
-        dateChooseWidget(),
+        dateChooseWidget(dateIndex),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -34,35 +31,42 @@ class RecordingViewState extends ConsumerState<RecordingView> {
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  setState(() => amount = double.tryParse(value));
+                  amount.value = double.tryParse(value);
                 },
               ),
             ),
-            Text(goal?.unit ?? '')
+            Text(state.goal?.unit ?? '')
           ],
         ),
         const SizedBox(height: 10),
-        Text('${goal?.goal}しました！！'),
+        Text('${state.goal?.goal}しました！！'),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: amount == null ? null : onRegister,
+          onPressed: amount.value == null
+              ? null
+              : () => onRegister(
+                    context,
+                    viewModel,
+                    amount.value!,
+                    dateIndex.value,
+                  ),
           child: const Text('記録する'),
         ),
       ],
     );
   }
 
-  Row dateChooseWidget() {
-    void updateDate(int? i) => setState(() => dateIndex = i!);
+  Row dateChooseWidget(ValueNotifier<int> dateIndex) {
+    void updateDate(int? i) => dateIndex.value = i!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
           children: [
-            Radio(
+            Radio<int>(
               value: 0,
-              groupValue: dateIndex,
+              groupValue: dateIndex.value,
               onChanged: updateDate,
             ),
             const Text('今日')
@@ -70,9 +74,9 @@ class RecordingViewState extends ConsumerState<RecordingView> {
         ),
         Row(
           children: [
-            Radio(
+            Radio<int>(
               value: 1,
-              groupValue: dateIndex,
+              groupValue: dateIndex.value,
               onChanged: updateDate,
             ),
             const Text('昨日')
@@ -82,27 +86,15 @@ class RecordingViewState extends ConsumerState<RecordingView> {
     );
   }
 
-  void onRegister() {
-    createRecord();
+  void onRegister(
+    BuildContext context,
+    RecordingViewModelProvider viewModel,
+    double amount,
+    int dateIndex,
+  ) {
+    viewModel.insertRecord(amount, dateIndex);
 
     Navigator.of(context).pop();
-    showToast(
-      FToast().init(context),
-      [
-        'ナイス！！',
-        'お疲れ様です！！',
-        'いい調子ですね！',
-        '！！！！',
-        '記録しました！',
-      ],
-    );
-  }
-
-  void createRecord() {
-    final dateList = [
-      DateTime.now(),
-      DateTime.now().subtract(const Duration(days: 1))
-    ];
-    Record.insert(amount!, dateList[dateIndex]);
+    showToast(FToast().init(context), viewModel.toastMessages());
   }
 }
