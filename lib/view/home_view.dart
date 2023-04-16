@@ -1,76 +1,61 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lets1000_android/state/state.dart';
 import 'package:lets1000_android/view/common/modal_sheet.dart';
 import 'package:lets1000_android/view/recording_view.dart';
 import 'package:lets1000_android/view/setting_goal_view.dart';
 import 'package:lets1000_android/view_model/home_view_model.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends HookConsumerWidget {
   const HomeView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _HomeViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(myStateProvider);
+    final viewModel = ref.watch(homeViewModelProvider.notifier);
 
-class _HomeViewState extends State<HomeView> {
-  final viewModel = HomeViewModel();
-  bool? hasGoal;
-
-  @override
-  void initState() {
-    super.initState();
-    viewModel.hasGoalStream.listen((b) {
-      setState(() => hasGoal = b);
-    });
-
-    viewModel.totalAmountStream.listen((event) {
-      setState(() {});
-    });
+    return ref.watch(myStateProvider).goal == null
+        ? settingGoalView(context, viewModel)
+        : progressView(context, state, viewModel, ref);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    viewModel.dispose();
-  }
+  Widget progressView(
+    BuildContext context,
+    MyState state,
+    HomeViewModelProvider viewModel,
+    WidgetRef ref,
+  ) {
+    final goalObject = state.goal!;
 
-  @override
-  Widget build(BuildContext context) {
-    return hasGoal == null
-        ? const LinearProgressIndicator()
-        : hasGoal == true
-            ? progressView(context)
-            : settingGoalView(context);
-  }
-
-  Widget progressView(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text('今年の目標'),
-          Text('1000${viewModel.goal?.unit} ${viewModel.goal?.goal}します！！！'),
-          const SizedBox(height: 120),
-          circleView(viewModel.totalAmount ?? 0),
-          const SizedBox(height: 150),
-        ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('今年の目標'),
+            Text('1000${goalObject.unit} ${goalObject.goal}します！！！'),
+            const SizedBox(height: 120),
+            circleView(state.totalRecordAmount),
+            const SizedBox(height: 150),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () {
-            showAlmostFullModal(context, const RecordingView(), updateState);
-          }),
+        child: const Icon(Icons.add),
+        onPressed: () {
+          showAlmostFullModal(context, const RecordingView(), () {});
+        },
+      ),
     );
   }
 
-  void updateState() {
-    setState(() {
-      viewModel.fetchGoal();
-      viewModel.fetchTotalAmount();
-    });
-  }
-
-  Widget settingGoalView(BuildContext context) {
+  Widget settingGoalView(
+    BuildContext context,
+    HomeViewModelProvider viewModel,
+  ) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -89,8 +74,8 @@ class _HomeViewState extends State<HomeView> {
           ),
           const SizedBox(height: 100),
           TextButton(
-            onPressed: () => showAlmostFullModal(
-                context, const SettingGoalView(), updateState),
+            onPressed: () =>
+                showAlmostFullModal(context, const SettingGoalView(), () {}),
             child: const Text('目標を設定'),
           ),
         ],
@@ -117,22 +102,25 @@ class _HomeViewState extends State<HomeView> {
 }
 
 class CirclePainter extends CustomPainter {
-  final int value;
-
   CirclePainter(this.value);
+  final int value;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-
-    paint.color = Colors.indigo;
-    paint.style = PaintingStyle.stroke;
-    paint.strokeWidth = 30;
+    final paint = Paint()
+      ..color = Colors.indigo
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 30;
 
     final endAngle = value / 1000 * pi * 2;
 
-    canvas.drawArc(const Offset(-100, -100) & const Size(200, 200), -pi / 2,
-        endAngle, false, paint);
+    canvas.drawArc(
+      const Offset(-100, -100) & const Size(200, 200),
+      -pi / 2,
+      endAngle,
+      false,
+      paint,
+    );
   }
 
   @override

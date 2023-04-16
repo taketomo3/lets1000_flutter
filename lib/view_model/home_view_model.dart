@@ -1,44 +1,17 @@
-import 'dart:async';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lets1000_android/state/state.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
-import 'package:lets1000_android/database/goal_db.dart';
-import 'package:lets1000_android/database/record_db.dart';
+// viewでの参照はmyState
+// stateを更新するときは、viewModelでmyStateNotifierを経由でmyStateの更新を行う
 
-class HomeViewModel {
-  HomeViewModel() {
-    fetchTotalAmount();
-    fetchGoal();
-  }
+final homeViewModelProvider =
+    StateNotifierProvider<HomeViewModelProvider, MyState>(
+  (ref) => HomeViewModelProvider(ref.watch(myStateProvider.notifier)),
+);
 
-  int? totalAmount;
-  Goal? goal;
-  bool? hasGoal;
-
-  final _totalAmountController = StreamController<int?>.broadcast();
-  final _hasGoalController = StreamController<bool?>.broadcast();
-
-  Stream<int?> get totalAmountStream => _totalAmountController.stream;
-  Stream<bool?> get hasGoalStream => _hasGoalController.stream;
-
-  void dispose() {
-    _totalAmountController.close();
-    _hasGoalController.close();
-  }
-
-  fetchTotalAmount() {
-    Record.fetchAll().then((value) {
-      double amount = 0;
-      for (var e in value) {
-        amount += e.amount;
-      }
-      totalAmount = amount.toInt();
-      _totalAmountController.add(totalAmount);
-    });
-  }
-
-  fetchGoal() {
-    Goal.fetchLast().then((value) {
-      goal = value;
-      _hasGoalController.add(value != null);
-    });
-  }
+class HomeViewModelProvider extends StateNotifier<MyState> {
+  HomeViewModelProvider(
+    MyStateNotifier myStateNotifier,
+  ) : super(myStateNotifier.state);
 }

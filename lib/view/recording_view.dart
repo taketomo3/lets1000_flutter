@@ -1,40 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lets1000_android/database/goal_db.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lets1000_android/view/common/toast.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 import 'package:lets1000_android/view_model/recording_view_model.dart';
 
-class RecordingView extends StatefulWidget {
-  const RecordingView({Key? key}) : super(key: key);
+class RecordingView extends HookConsumerWidget {
+  const RecordingView({super.key});
 
   @override
-  State<RecordingView> createState() => _RecordingViewState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final amount = useState<double?>(null);
+    final dateIndex = useState<int>(0);
 
-class _RecordingViewState extends State<RecordingView> {
-  final viewModel = RecordingViewModel();
-  Goal? goal;
-  FToast fToast = FToast();
+    final state = ref.watch(myStateProvider);
+    final viewModel = ref.watch(recordingViewModelProvider.notifier);
 
-  double? amount;
-  int dateIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    viewModel.fetchGoal().then((value) {
-      setState(() => goal = value);
-    });
-    fToast.init(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         const SizedBox(height: 100),
-        dateChooseWidget(),
+        dateChooseWidget(dateIndex),
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -46,56 +32,70 @@ class _RecordingViewState extends State<RecordingView> {
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
-                  setState(() => amount = double.tryParse(value));
+                  amount.value = double.tryParse(value);
                 },
               ),
             ),
-            Text(goal?.unit ?? "")
+            Text(state.goal?.unit ?? '')
           ],
         ),
         const SizedBox(height: 10),
-        Text('${goal?.goal}しました！！'),
+        Text('${state.goal?.goal}しました！！'),
         const SizedBox(height: 30),
         ElevatedButton(
-          onPressed: amount == null
+          onPressed: amount.value == null
               ? null
-              : () {
-                  viewModel.onRegistered(
-                      amount!, dateIndex, Navigator.of(context).pop());
-                  showToast(fToast,
-                      ["ナイス！！", "お疲れ様です！！", "いい調子ですね！", "！！！！", "記録しました！"]);
-                },
+              : () => onRegister(
+                    context,
+                    viewModel,
+                    amount.value!,
+                    dateIndex.value,
+                  ),
           child: const Text('記録する'),
         ),
       ],
     );
   }
 
-  Row dateChooseWidget() {
-    void updateDate(int? i) => setState(() {
-          if (i != null) dateIndex = i;
-        });
+  Row dateChooseWidget(ValueNotifier<int> dateIndex) {
+    void updateDate(int? i) => dateIndex.value = i!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(children: [
-          Radio(
-            value: 0,
-            groupValue: dateIndex,
-            onChanged: (i) => updateDate(i),
-          ),
-          const Text('今日')
-        ]),
-        Row(children: [
-          Radio(
-            value: 1,
-            groupValue: dateIndex,
-            onChanged: (i) => updateDate(i),
-          ),
-          const Text('昨日')
-        ]),
+        Row(
+          children: [
+            Radio<int>(
+              value: 0,
+              groupValue: dateIndex.value,
+              onChanged: updateDate,
+            ),
+            const Text('今日')
+          ],
+        ),
+        Row(
+          children: [
+            Radio<int>(
+              value: 1,
+              groupValue: dateIndex.value,
+              onChanged: updateDate,
+            ),
+            const Text('昨日')
+          ],
+        ),
       ],
     );
+  }
+
+  void onRegister(
+    BuildContext context,
+    RecordingViewModelProvider viewModel,
+    double amount,
+    int dateIndex,
+  ) {
+    viewModel.insertRecord(amount, dateIndex);
+
+    Navigator.of(context).pop();
+    showToast(FToast().init(context), viewModel.toastMessages());
   }
 }

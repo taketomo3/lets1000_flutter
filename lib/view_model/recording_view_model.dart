@@ -1,19 +1,56 @@
-import 'package:lets1000_android/database/goal_db.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lets1000_android/database/record_db.dart';
+import 'package:lets1000_android/model/record.dart';
+import 'package:lets1000_android/repository/record_repository.dart';
+import 'package:lets1000_android/state/state.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
-class RecordingViewModel {
-  Goal? goal;
+final recordingViewModelProvider =
+    StateNotifierProvider<RecordingViewModelProvider, MyState>(
+  (ref) => RecordingViewModelProvider(
+    ref.watch(myStateProvider.notifier),
+  ),
+);
 
-  Future<Goal?> fetchGoal() {
-    return Goal.fetchLast();
+class RecordingViewModelProvider extends StateNotifier<MyState> {
+  RecordingViewModelProvider(
+    MyStateNotifier myStateNotifier,
+  ) : super(myStateNotifier.state) {
+    _myStateNotifier = myStateNotifier;
   }
 
-  onRegistered(double amount, int dateIndex, void onCreated) {
-    final List<DateTime> dateList = [
+  MyStateNotifier? _myStateNotifier;
+  final RecordRepository _recordRepository = RecordRepository(RecordDatabase());
+
+  Future<Record> insertRecord(double amount, int dateIndex) async {
+    final date = fetchDateFromIndex(dateIndex);
+    final record = await _recordRepository.addRecord(
+      Record(
+        amount: amount,
+        date: date,
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    _myStateNotifier?.updateMyState(null, record);
+    return record;
+  }
+
+  DateTime fetchDateFromIndex(int index) {
+    final dateList = [
       DateTime.now(),
       DateTime.now().subtract(const Duration(days: 1))
     ];
+    return dateList[index];
+  }
 
-    Record.insert(amount, dateList[dateIndex]).then((id) => {onCreated});
+  List<String> toastMessages() {
+    return [
+      'ナイス！！',
+      'お疲れ様です！！',
+      'いい調子ですね！',
+      '！！！！',
+      '記録しました！',
+    ];
   }
 }

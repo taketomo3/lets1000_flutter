@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 void showToast(FToast fToast, List<String> textCandidates) {
-  Widget toast = Container(
-    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+  final toast = Container(
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(25.0),
+      borderRadius: BorderRadius.circular(25),
       color: Colors.greenAccent,
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         const Icon(Icons.check),
-        const SizedBox(width: 12.0),
+        const SizedBox(width: 12),
         Text(_getRandomToastWord(textCandidates)),
       ],
     ),
@@ -23,7 +23,6 @@ void showToast(FToast fToast, List<String> textCandidates) {
   fToast.showToast(
     child: toast,
     gravity: ToastGravity.CENTER,
-    toastDuration: const Duration(seconds: 2),
   );
 }
 

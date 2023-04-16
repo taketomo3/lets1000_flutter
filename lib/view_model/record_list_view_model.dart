@@ -1,46 +1,38 @@
-import 'dart:async';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lets1000_android/state/state.dart';
+import 'package:lets1000_android/view_model/my_state_view_model.dart';
 
-import 'package:lets1000_android/database/goal_db.dart';
-import 'package:lets1000_android/database/record_db.dart';
+final recordListViewModelProvider =
+    StateNotifierProvider<RecordListViewModelProvider, MyState>(
+  (ref) => RecordListViewModelProvider(ref.watch(myStateProvider.notifier)),
+);
 
-class RecordListViewModel {
-  RecordListViewModel() {
-    fetchRecordList();
+class RecordListViewModelProvider extends StateNotifier<MyState> {
+  RecordListViewModelProvider(
+    MyStateNotifier myStateNotifier,
+  ) : super(myStateNotifier.state) {
+    _myStateNotifier = myStateNotifier;
   }
 
-  List<Record>? recordList;
-
-  final _recordListController = StreamController<List<Record>?>.broadcast();
-
-  Stream<List<Record>?> get recordListStream => _recordListController.stream;
-
-  void dispose() {
-    _recordListController.close();
-  }
-
-  fetchRecordList() {
-    Record.fetchAll().then((value) {
-      recordList = value;
-      _recordListController.add(value);
-    });
-  }
-
-  Future<Goal?> fetchGoal() {
-    return Goal.fetchLast();
-  }
+  MyStateNotifier? _myStateNotifier;
 
   int fetchMonthlyTotal(String dateString) {
-    List<String> dateParts = dateString.split("年");
-    int year = int.parse(dateParts[0]);
-    int month = int.parse(dateParts[1].split("月")[0]);
+    final recordList = _myStateNotifier?.state.recordList;
 
-    double total = 0;
+    if (recordList == null) {
+      return 0;
+    }
 
-    recordList?.forEach((record) {
+    final dateParts = dateString.split('年');
+    final year = int.parse(dateParts[0]);
+    final month = int.parse(dateParts[1].split('月')[0]);
+
+    var total = 0.0;
+    for (final record in recordList) {
       if (record.date.year == year && record.date.month == month) {
         total += record.amount;
       }
-    });
+    }
 
     return total.toInt();
   }

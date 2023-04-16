@@ -1,64 +1,42 @@
-import 'package:lets1000_android/database/database_helper.dart';
+import 'package:lets1000_android/database/app_database.dart';
+import 'package:lets1000_android/model/record.dart';
 
-class Record {
-  final int id;
-  final double amount;
-  final DateTime date;
-  final DateTime createdAt;
-
+class RecordDatabase extends AppDatabase {
   static const String _tableName = 'Record';
 
-  Record(
-      {required this.id,
-      required this.amount,
-      required this.date,
-      required this.createdAt});
+  Future<List<Record>> fetchRecordList() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      orderBy: 'id DESC',
+    );
 
-  static const executeString = '''
-      CREATE TABLE Record (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        amount REAL NOT NULL,
-        date TEXT NOT NULL,
-        created_at TEXT NOT NULL
-      )
-      ''';
-
-  static Record fromMap(Map<String, dynamic> record) {
-    return Record(
-        id: record['id'] as int,
-        amount: record['amount'] as double,
-        date: DateTime.parse(record['date'] as String),
-        createdAt: DateTime.parse(record['created_at'] as String));
-  }
-
-  // 全件取得
-  static Future<List<Record>> fetchAll() async {
-    final db = await DatabaseHelper.instance.database;
-    final records = await db!.query(Record._tableName, orderBy: 'id DESC');
-
-    if (records.isEmpty) {
+    if (maps.isEmpty) {
       return [];
     }
 
-    return records.map((record) => Record.fromMap(record)).toList();
+    return maps.map(Record.fromJson).toList();
   }
 
-  // 追加
-  static Future<int> insert(double amount, DateTime date) async {
-    Map<String, dynamic> row = {
-      'amount': amount,
-      'date': date.toString(),
-      'created_at': DateTime.now().toString()
-    };
+  Future<Record> insert(Record record) async {
+    final db = await database;
 
-    final db = await DatabaseHelper.instance.database;
-    return await db!.insert(Record._tableName, row);
+    final id = await db.insert(
+      _tableName,
+      record.toJson(),
+    );
+
+    return record.copyWith(
+      id: id,
+    );
   }
 
-  // 削除
-  static Future<int> delete(int id) async {
-    final db = await DatabaseHelper.instance.database;
-    return await db!
-        .delete(Record._tableName, where: 'id = ?', whereArgs: [id]);
+  Future<void> delete(int id) async {
+    final db = await database;
+    await db.delete(
+      _tableName,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

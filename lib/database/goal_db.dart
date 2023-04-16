@@ -1,54 +1,34 @@
-import 'package:lets1000_android/database/database_helper.dart';
+import 'package:lets1000_android/database/app_database.dart';
+import 'package:lets1000_android/model/goal.dart';
 
-class Goal {
-  final int id;
-  final String goal;
-  final String unit;
-  final DateTime createdAt;
-
+class GoalDatabase extends AppDatabase {
   static const String _tableName = 'Goal';
 
-  Goal(
-      {required this.id,
-      required this.goal,
-      required this.unit,
-      required this.createdAt});
+  Future<Goal?> fetchGoal() async {
+    final db = await database;
+    final maps = await db.query(
+      _tableName,
+      orderBy: 'id DESC',
+      limit: 1,
+    );
 
-  static const executeString = '''
-      CREATE TABLE Goal (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        goal TEXT NOT NULL,
-        unit TEXT NOT NULL,
-        created_at TEXT NOT NULL
-      )
-      ''';
-
-  static Future<Goal?> fetchLast() async {
-    final db = await DatabaseHelper.instance.database;
-    final goals =
-        await db!.query(Goal._tableName, orderBy: 'id DESC', limit: 1);
-
-    if (goals.isEmpty) {
+    if (maps.isEmpty) {
       return null;
     }
 
-    final goal = goals.first;
-
-    return Goal(
-        id: goal['id'] as int,
-        goal: goal['goal'] as String,
-        unit: goal['unit'] as String,
-        createdAt: DateTime.parse(goal['created_at'] as String));
+    return Goal.fromJson(maps.first);
   }
 
-  static Future<int> insert(String goal, String unit) async {
-    Map<String, dynamic> row = {
-      'goal': goal,
-      'unit': unit,
-      'created_at': DateTime.now().toString()
-    };
+  Future<Goal> insert(Goal goal) async {
+    final db = await database;
 
-    final db = await DatabaseHelper.instance.database;
-    return await db!.insert(Goal._tableName, row);
+    final id = await db.insert(
+      _tableName,
+      goal.toJson(),
+    );
+
+    return goal.copyWith(
+      id: id,
+    );
   }
 }
