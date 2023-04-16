@@ -4,7 +4,6 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:lets1000_android/constant.dart';
 import 'package:lets1000_android/data_class/document_element.dart';
 import 'package:lets1000_android/data_class/group_element.dart';
-import 'package:lets1000_android/repository/package_info_repository.dart';
 import 'package:lets1000_android/view/common/webview.dart';
 import 'package:lets1000_android/view_model/document_view_model.dart';
 import 'package:lets1000_android/view_model/my_state_view_model.dart';
@@ -89,7 +88,7 @@ class DocumentView extends ConsumerWidget {
     final state = ref.watch(myStateProvider);
     final viewModel = ref.watch(documentViewModelProvider.notifier);
 
-    final packageInfo = ref.watch(packageInfoProvider).value;
+    final packageInfo = ref.watch(viewModel.packageInfoProvider).value;
     final goalUnit = state.goal?.unit ?? '';
 
     return [
@@ -129,12 +128,12 @@ class DocumentView extends ConsumerWidget {
         title: 'お問い合わせ',
         url: contactFormPath,
       ),
-      // DocumentElement(
-      //   groupId: 2,
-      //   id: 3,
-      //   title: 'Playストアを確認',
-      //   url: ConstantData.playStorePath,
-      // ),
+      DocumentElement(
+        groupId: 2,
+        id: 3,
+        title: 'Playストアを確認',
+        url: playStorePath,
+      ),
       DocumentElement(
         groupId: 3,
         id: 1,

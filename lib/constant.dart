@@ -1,7 +1,8 @@
 String updateDate = '2023年3月24日';
 
 // PlayStore
-String playStorePath = '';
+String playStorePath =
+    'https://play.google.com/store/apps/details?id=com.taketomo.lets1000';
 
 // 開発ロードマップ（notion）
 String roadmapPath =
