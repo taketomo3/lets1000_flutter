@@ -43,4 +43,8 @@ class DocumentViewModelProvider extends StateNotifier<MyState> {
         (totalDaysInYear / daysSinceStart) * state.totalRecordAmount;
     return expectedTotalAmount.toInt();
   }
+
+  final packageInfoProvider = FutureProvider<PackageInfo>((ref) {
+    return PackageInfo.fromPlatform();
+  });
 }
