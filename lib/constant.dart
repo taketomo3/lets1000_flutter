@@ -1,4 +1,4 @@
-String updateDate = '2023年3月24日';
+String updateDate = '2023年4月16日';
 
 // PlayStore
 String playStorePath =
